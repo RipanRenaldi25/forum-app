@@ -2,15 +2,15 @@ import { FaPlus, FaRocketchat, FaSignOutAlt, FaUser } from 'react-icons/fa';
 import { HiChartBar } from 'react-icons/hi';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink } from 'react-router-dom';
-import { unSetAuthUser } from '../state/users/Action';
 import { unsetProfile } from '../state/userProfile/Action';
+import { asyncUnsetAuthUser } from '../state/users/Action';
 
 function Navigation() {
   const dispatch = useDispatch();
   const { user } = useSelector((states) => states);
 
   const onLogout = () => {
-    dispatch(unSetAuthUser());
+    dispatch(asyncUnsetAuthUser());
     dispatch(unsetProfile());
   };
 

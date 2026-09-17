@@ -1,4 +1,3 @@
-// import { hideLoading, showLoading } from 'react-redux-loading-bar';
 import { getAllLeaderBoard } from '../../utils/api';
 import ActionType from './ActionType';
 
@@ -10,7 +9,6 @@ export const putAllLeaderBoardActionCreator = (users) => ({
 });
 
 export const asyncFetchAllLeaderBoard = () => async (dispatch) => {
-  // dispatch(showLoading());
   try {
     const {
       data: { leaderboards },
@@ -23,5 +21,4 @@ export const asyncFetchAllLeaderBoard = () => async (dispatch) => {
   }) {
     alert(message);
   }
-  // dispatch(hideLoading());
 };

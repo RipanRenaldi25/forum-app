@@ -11,6 +11,14 @@ export const setAuthUser = (authUser) => ({
 export const unSetAuthUser = () => ({
   type: ActionType.unSetAuthUser,
 });
+
+export const asyncUnsetAuthUser = () => {
+  return async (dispatch) => {
+    dispatch(unSetAuthUser());
+    localStorage.removeItem('AUTH_TOKEN');
+  };
+};
+
 export const asyncRegistUser =
   ({ name, email, password }) =>
     async () => {
