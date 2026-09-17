@@ -1,0 +1,44 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
+  --color-ink: #070b14;
+  --color-panel: #101826;
+  --color-accent: #22d3ee;
+  --color-accent-2: #818cf8;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: #070b14;
+  color: #e8eef8;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.thread-body a {
+  color: #67e8f9;
+  text-decoration: underline;
+}
+
+@keyframes loading-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+.loading-bar-fill {
+  animation: loading-slide 1s ease-in-out infinite;
+}
