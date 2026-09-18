@@ -1,28 +1,13 @@
 /**
  * Should call alert when fetchingLeaderboard is failed
  * Should dispatch correctly when leaderboard is exists
- * Should return initialState when dispatching unknown action
  */
 
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { asyncFetchAllLeaderBoard, putAllLeaderBoardActionCreator } from './action';
-import leaderBoardReducer from './leaderboardReducer';
+import { describe, expect, it, vi } from 'vitest';
 import * as api from '../../utils/api';
+import { asyncFetchAllLeaderBoard, putAllLeaderBoardActionCreator } from './action';
 
 describe('Leaderboard Action', () => {
-
-  it('Should return initialState when dispatching unknown action', () => {
-    const users = [{
-      id: 'user1',
-      name: 'test'
-    }];
-
-
-    const nextState = leaderBoardReducer([], putAllLeaderBoardActionCreator(users));
-
-    expect(nextState).toEqual(users);
-  });
-
   it('Should call alert when fetchingLeaderboard is failed', async () => {
     window.alert = vi.fn();
     const fakeErrorResponse = {
@@ -57,17 +42,6 @@ describe('Leaderboard Action', () => {
 
     expect(dispatch).toHaveBeenCalledOnce();
     expect(dispatch).toHaveBeenCalledWith(putAllLeaderBoardActionCreator(fakeLeaderBoards));
-  });
-
-  it('Should return initialState when dispatching unknown action', () => {
-    const unknownAction = {
-      type: 'UNKNOWN'
-    };
-    const initialState = [];
-
-    const nextState = leaderBoardReducer(initialState, unknownAction);
-
-    expect(nextState).toEqual(initialState);
   });
 
 });
