@@ -36,7 +36,7 @@ describe('LeaderBoard Reducer', () => {
     }
     ];
 
-    const nextState = leaderBoardReducer(fakeLeaderBoards, ActionType.fetchAllLeaderBoard);
+    const nextState = leaderBoardReducer([], putAllLeaderBoardActionCreator(fakeLeaderBoards));
 
     expect(nextState).toEqual(fakeLeaderBoards);
   });

@@ -1,4 +1,3 @@
-// import { showLoading, hideLoading } from 'react-redux-loading-bar';
 import { createThread, getAllThreads } from '../../utils/api';
 import ActionType from './ActionType';
 
@@ -8,12 +7,12 @@ export const getThreadsActionCreator = (threads) => ({
     threads,
   },
 });
+
 export const filterThreadActionCreator = () => ({
   type: ActionType.filterThread,
 });
 
 export const asyncGetThread = () => async (dispatch) => {
-  // dispatch(showLoading());
   try {
     const { data: threads } = await getAllThreads();
     dispatch(getThreadsActionCreator(threads));
@@ -22,7 +21,6 @@ export const asyncGetThread = () => async (dispatch) => {
     const { message } = data;
     alert(message);
   }
-  // dispatch(hideLoading());
 };
 
 export const createThreadActionCreator = (thread) => ({
@@ -35,7 +33,6 @@ export const createThreadActionCreator = (thread) => ({
 export const asyncCreateThread =
   ({ title, body, category }) =>
     async (dispatch) => {
-    // dispatch(showLoading());
       try {
         const {
           data: { thread },
@@ -49,5 +46,4 @@ export const asyncCreateThread =
       }) {
         alert(message);
       }
-    // dispatch(hideLoading());
     };
