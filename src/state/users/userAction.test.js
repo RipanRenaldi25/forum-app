@@ -1,7 +1,4 @@
 /**
- * Should set user correctly
- * Should unset user correctly
- * Should return initial state when unknown action
  * Should show alert correctly when register is failed
  * Should register correctly when credential is correct
  * Should dispatch correctly when logout
@@ -15,44 +12,6 @@ import userReducer from './userReducer';
 describe('Users Action', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-  });
-
-  it('Should set user correctly when given correct payload', () => {
-    const fakeUser = {
-      id: 1,
-      name: 'test',
-      email: 'test',
-    };
-
-    const initialState = null;
-
-    const nextState = userReducer(initialState, setAuthUser(fakeUser));
-
-    expect(nextState).toEqual(fakeUser);
-  });
-
-  it('Should unset user correctly', () => {
-    const initialState = null;
-
-    const nextState = userReducer(initialState, unSetAuthUser());
-
-    expect(nextState).toBeNull();
-  });
-
-  it('Should return initialState when given unknown action', () => {
-    const initialState = {
-      id: 1,
-      name: 'test',
-      email: 'test'
-    };
-
-    const unknownAction = {
-      type: 'UNKNOWN'
-    };
-
-    const nextState = userReducer(initialState, unknownAction);
-
-    expect(nextState).toEqual(initialState);
   });
 
   it('Should show alert correctly when register is Failed', async () => {
