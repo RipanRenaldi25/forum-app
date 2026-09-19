@@ -17,7 +17,6 @@ export function fetchAllUsers(users) {
 
 export function asyncFetchAllUsers() {
   return async (dispatch) => {
-    // dispatch(showLoading());
     try {
       const { data } = await getAllUsers();
       dispatch(fetchAllUsers(data));
@@ -25,7 +24,6 @@ export function asyncFetchAllUsers() {
       const { message } = data;
       alert(message);
     }
-    // dispatch(hideLoading());
   };
 }
 
@@ -37,7 +35,6 @@ export const fetchDetailUserThread = (detail) => ({
 });
 
 export const asyncFetchDetailUserThread = (id) => async (dispatch) => {
-  // dispatch(showLoading());
   try {
     const {
       data: { detailThread },
@@ -50,7 +47,6 @@ export const asyncFetchDetailUserThread = (id) => async (dispatch) => {
   }) {
     alert(message);
   }
-  // dispatch(hideLoading());
 };
 
 export const addCommentToThreadActionCreator = ({
@@ -75,7 +71,6 @@ export const addCommentToThreadActionCreator = ({
 export const asyncAddCommentToThread =
   ({ threadId, content }) =>
     async (dispatch) => {
-    // dispatch(showLoading());
       try {
         const {
           data: { comment },
@@ -88,5 +83,4 @@ export const asyncAddCommentToThread =
       }) {
         alert(message);
       }
-    // dispatch(hideLoading());
     };
