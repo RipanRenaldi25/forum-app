@@ -3,7 +3,7 @@ import { getTotalVote, parseDate, removeTags } from '../utils/utils';
 
 function CommentItem({ content, createdAt, upVotesBy, downVotesBy, owner }) {
   return (
-    <div className='mb-2 rounded-2xl border border-white/10 bg-white/[0.04] p-4'>
+    <div data-testid="comment-item" className='mb-2 rounded-2xl border border-white/10 bg-white/[0.04] p-4'>
       <div className='mb-3 flex items-center justify-between'>
         <div className='flex items-center'>
           <img
