@@ -7,7 +7,7 @@
 import React from 'react';
 import '@testing-library/jest-dom/vitest';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { cleanup, getAllByTestId, render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import CommentList from '../CommentList';
 
 
