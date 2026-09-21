@@ -18,6 +18,6 @@ jobs:
       - name: Install Dependencies
         run: npm install
       - name: Run Unit Tests
-        run: npm ci:test
+        run: npm run ci:test
       - name: Run End to End Tests
         run: npm run ci:e2e
