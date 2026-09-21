@@ -24,7 +24,7 @@ describe('CommentInput Component', () => {
       name: 'Berikan komentar'
     });
 
-    expect(heading).not.toBeVisible();
+    expect(heading).toBeVisible();
   });
 
   it('Should handle comment typing event correctly', async () => {
