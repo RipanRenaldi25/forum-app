@@ -4,6 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import daStyle from 'eslint-config-dicodingacademy';
+import cypressPlugin from 'eslint-plugin-cypress';
 
 export default defineConfig([
   globalIgnores(['dist']),
@@ -22,5 +23,6 @@ export default defineConfig([
       'no-unused-vars': 'off',
     },
   },
+  cypressPlugin.configs.recommended,
   daStyle,
 ]);
