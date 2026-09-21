@@ -8,7 +8,10 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest --no-watch"
+    "test": "vitest --no-watch",
+    "e2e": "npx cypress run",
+    "ci:test": "npm run test",
+    "ci:e2e": "npm run test && start-server-and-test dev http://localhost:5173 e2e"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.12.0",
@@ -20,6 +23,7 @@
     "react-icons": "^5.7.0",
     "react-redux": "^9.3.0",
     "react-router-dom": "^7.18.3",
+    "start-server-and-test": "^3.0.12",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
