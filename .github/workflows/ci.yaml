@@ -16,13 +16,11 @@ jobs:
       - name: Setup Node.JS
         uses: actions/setup-node@v4
         with:
-          node-version: 24.21.0
+          node-version: 20
       - name: Install Dependencies
         run: npm install
       - name: Create .env from .env.example
-        run: |
-          cp .env.example .env
-          echo "VITE_API_URL=https://forum-api.dicoding.dev/v1" >> .env
+        run: cp .env.example .env && echo "VITE_API_URL=https://forum-api.dicoding.dev/v1" > .env
       - name: Run Unit Tests
         run: npm run ci:test
       - name: Run End to End Tests
