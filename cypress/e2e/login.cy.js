@@ -8,7 +8,6 @@
  * should redirect to / when credential is match
  */
 
-
 describe('Login E2e', () => {
   beforeEach(() => {
     Cypress.on('uncaught:exception', (err) => {
@@ -23,35 +22,55 @@ describe('Login E2e', () => {
   });
 
   it('Should render correcltly', () => {
-    // cy.contains('Login').should('be.visible');
     cy.get('h1').contains('Login').should('be.visible');
     cy.get('button[type="submit"]').should('be.visible');
     cy.get('input[placeholder="Email"]').should('be.visible');
     cy.get('input[type="password"]').should('be.visible');
-
   });
 
   it('Should show alert when input field is empty', () => {
+    cy.intercept('POST', '**/login', {
+      statusCode: 400,
+      body: {
+        status: 'fail',
+        message: '"email" is required'
+      }
+    }).as('loginRequest');
     const emptyEmailMessage = '"email" is required';
     const emptyPasswordMessage ='"password" is required';
+
     cy.get('button[type="submit"]').click();
+    cy.wait('@loginRequest');
     cy.get('@alert').should('have.been.calledWith', emptyEmailMessage);
 
-
+    cy.intercept('POST', '**/login', {
+      statusCode: 400,
+      body: {
+        status: 'fail',
+        message: '"password" is required'
+      }
+    }).as('loginRequest');
     cy.get("input[placeholder='Email']").type('test@gmail.com');
     cy.get('button[type="submit"]').click();
+    cy.wait('@loginRequest');
     cy.get('@alert').should('have.been.calledWith', emptyPasswordMessage);
-
   });
 
   it('should show alert when email is not valid email', () => {
+    cy.intercept('POST', '**/login', {
+      statusCode: 400,
+      body: {
+        status: 'fail',
+        message: '"email" must be a valid email'
+      }
+    }).as('loginRequest');
     const invalidEmailMessage = '"email" must be a valid email';
 
     cy.get('input[placeholder="Email"]').type('test');
     cy.get('input[type="password"]').type('test');
 
     cy.get('button[type="submit"]').click();
-
+    cy.wait('@loginRequest');
     cy.get('@alert').should('have.been.calledWith', invalidEmailMessage);
   });
 
@@ -60,32 +79,39 @@ describe('Login E2e', () => {
 
     cy.get('input[placeholder="Email"]').type('test@gmail.com');
     cy.get("input[type='password']").type('tset');
+    cy.intercept('POST', '**/login', {
+      statusCode: 400,
+      body: {
+        status: 'fail',
+        message: invalidCredentialMessage
+      }
+    }).as('loginRequest');
     cy.get('button[type="submit"]').click();
-
+    cy.wait('@loginRequest');
     cy.get('@alert').should('have.been.calledWith', invalidCredentialMessage);
   });
 
   it('should redirect to / when credential is match', () => {
-    cy.intercept('POST', '*login*').as('loginRequest');
-
+    cy.intercept('POST', '**/login', {
+      statusCode: 200,
+      body: {
+        status: 'success',
+        data: {
+          token: 'token'
+        }
+      }
+    }).as('loginRequest');
     const email = 'cobaakun00902@gmail.com';
     const password = 'cobaakun00902@gmail.com';
 
     cy.get('input[placeholder="Email"]').type(email);
     cy.get('input[type="password"]').type(password);
     cy.get("button[type='submit']").click();
+    cy.wait('@loginRequest');
 
-    cy.wait('@loginRequest', { timeout: 10000 }).then((interception) => {
-      if (!interception.response) {
-        cy.log('❌ REQUEST DITANGKAP TAPI TIDAK ADA RESPONSE (NETWORK ERROR)');
-        cy.log('URL Request:', interception.request.url);
-      } else {
-        cy.log('✅ Response Status:', interception.response.statusCode);
-        cy.log('✅ Response Body:', JSON.stringify(interception.response.body));
-      }
-    });
+    cy.location('pathname').should('not.equal', '/login');
+    cy.location('pathname').should('equal', '/');
 
-    cy.location('pathname', { timeout: 10000 }).should('equal', '/');
   });
 
 });
