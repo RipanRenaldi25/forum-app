@@ -17,19 +17,6 @@ jobs:
           node-version: 24
       - name: Install Dependencies
         run: npm install
-        # 🟢 DIAGNOSTIK 1: Tes resolusi DNS & IP Server API
-      - name: Diagnostic - Check DNS Resolution
-        run: |
-          echo "=== 1. CHECK DNS & IP ==="
-          nslookup forum-api.dicoding.dev || true
-
-      # 🟢 DIAGNOSTIK 2: Tes Handshake Network & Response Header asli
-      - name: Diagnostic - Test API Connection with Verbose CURL
-        run: |
-          echo "=== 2. VERBOSE CURL REQUEST ==="
-          curl -v -i -X POST https://forum-api.dicoding.dev/v1/login \
-            -H "Content-Type: application/json" \
-            -d '{"email":"test@gmail.com","password":"test"}' || true
       - name: Create .env from .env.example
         run: cp .env.example .env && echo "VITE_API_URL=https://forum-api.dicoding.dev/v1" > .env
       - name: Run Unit Tests
