@@ -12,9 +12,9 @@ jobs:
       VITE_API_URL: https://forum-api.dicoding.dev/v1
     steps:
       - name: Checkout All Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Setup Node.JS
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 24
       - name: Install Dependencies
