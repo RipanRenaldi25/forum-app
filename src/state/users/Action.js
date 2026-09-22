@@ -42,6 +42,6 @@ export const asyncLoginUser =
         localStorage.setItem('AUTH_TOKEN', token);
       } catch (err) {
         const message = err.response?.data?.message ?? err.message ?? 'Terjadi kesalahan jaringan';
-        alert(data.message);
+        alert(message);
       }
     };
