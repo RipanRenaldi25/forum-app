@@ -42,6 +42,5 @@ export const asyncLoginUser =
       } catch ({ response: { data } }) {
         const { message } = data;
         alert(message);
-        return;
       }
     };

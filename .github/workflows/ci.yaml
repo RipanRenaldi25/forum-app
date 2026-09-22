@@ -21,5 +21,3 @@ jobs:
         run: npm run ci:test
       - name: Run End to End Tests
         run: npm run ci:e2e
-        env:
-          VITE_API_URL: https://forum-api.dicoding.dev/v1
