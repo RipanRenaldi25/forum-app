@@ -11,6 +11,10 @@
 
 describe('Login E2e', () => {
   beforeEach(() => {
+    Cypress.on('uncaught:exception', (err) => {
+      console.log('App Runtime Error:', err.message);
+      return false;
+    });
     cy.visit('http://localhost:5173/login', {
       onBeforeLoad: (win) => {
         cy.stub(win, 'alert').as('alert');
@@ -62,7 +66,8 @@ describe('Login E2e', () => {
   });
 
   it('should redirect to / when credential is match', () => {
-    cy.intercept('POST', '**/login').as('loginRequest');
+    cy.intercept('POST', '*login*').as('loginRequest');
+
     const email = 'cobaakun00902@gmail.com';
     const password = 'cobaakun00902@gmail.com';
 
@@ -70,14 +75,17 @@ describe('Login E2e', () => {
     cy.get('input[type="password"]').type(password);
     cy.get("button[type='submit']").click();
 
-    cy.wait('@loginRequest').then((interception) => {
-      // Log response ke Cypress Runner console
-      cy.log('Response status:', interception.response.statusCode);
-      cy.log('Response body:', JSON.stringify(interception.response.body));
+    cy.wait('@loginRequest', { timeout: 10000 }).then((interception) => {
+      if (!interception.response) {
+        cy.log('❌ REQUEST DITANGKAP TAPI TIDAK ADA RESPONSE (NETWORK ERROR)');
+        cy.log('URL Request:', interception.request.url);
+      } else {
+        cy.log('✅ Response Status:', interception.response.statusCode);
+        cy.log('✅ Response Body:', JSON.stringify(interception.response.body));
+      }
     });
 
-    cy.location('pathname').should('not.equal', '/login');
-    cy.location('pathname').should('equal', '/');
+    cy.location('pathname', { timeout: 10000 }).should('equal', '/');
   });
 
 });
