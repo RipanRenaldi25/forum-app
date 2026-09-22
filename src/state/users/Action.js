@@ -26,9 +26,8 @@ export const asyncRegistUser =
         const { message } = await registerUser({ name, email, password });
         alert(message);
       } catch (err) {
-        console.log(err)
-        const { response: { data } } = err;
-        alert(data.message);
+        const message = err.response?.data?.message ?? err.message ?? 'Terjadi kesalahan jaringan';
+        alert(message);
       }
     };
 
@@ -42,10 +41,7 @@ export const asyncLoginUser =
         dispatch(setAuthUser(token));
         localStorage.setItem('AUTH_TOKEN', token);
       } catch (err) {
-        console.log(err)
-        const { response: { data } } = err;
-        const { message } = data;
-        alert(message);
-        return;
+        const message = err.response?.data?.message ?? err.message ?? 'Terjadi kesalahan jaringan';
+        alert(data.message);
       }
     };
