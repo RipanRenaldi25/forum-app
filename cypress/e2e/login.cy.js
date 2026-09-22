@@ -62,6 +62,7 @@ describe('Login E2e', () => {
   });
 
   it('should redirect to / when credential is match', () => {
+    cy.intercept('POST', '**/login').as('loginRequest');
     const email = 'cobaakun00902@gmail.com';
     const password = 'cobaakun00902@gmail.com';
 
@@ -71,7 +72,9 @@ describe('Login E2e', () => {
 
     cy.location('pathname').should('not.equal', '/login');
     cy.location('pathname').should('equal', '/');
-
+    cy.wait('@loginRequest').then((interception) => {
+    cy.log(JSON.stringify(interception.response)); // ini akan tampil di output Cypress
+  });
   });
 
 });
