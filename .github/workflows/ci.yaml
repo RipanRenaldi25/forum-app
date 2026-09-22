@@ -8,8 +8,6 @@ name: "Continous Integration"
 jobs:
   automation-test:
     runs-on: ubuntu-latest
-    env:
-      VITE_API_URL: https://forum-api.dicoding.dev/v1
     steps:
       - name: Checkout All Code
         uses: actions/checkout@v5
