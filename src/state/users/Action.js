@@ -25,7 +25,9 @@ export const asyncRegistUser =
       try {
         const { message } = await registerUser({ name, email, password });
         alert(message);
-      } catch ({ response: { data } }) {
+      } catch (err) {
+        console.log(err)
+        const { response: { data } } = err;
         alert(data.message);
       }
     };
@@ -39,7 +41,9 @@ export const asyncLoginUser =
         } = await loginUser({ email, password });
         dispatch(setAuthUser(token));
         localStorage.setItem('AUTH_TOKEN', token);
-      } catch ({ response: { data } }) {
+      } catch (err) {
+        console.log(err)
+        const { response: { data } } = err;
         const { message } = data;
         alert(message);
         return;
