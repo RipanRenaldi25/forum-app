@@ -4,6 +4,7 @@ name: "Continous Integration"
   pull_request:
     branches:
       - main
+      
 
 jobs:
   automation-test:
