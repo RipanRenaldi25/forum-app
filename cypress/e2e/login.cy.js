@@ -70,11 +70,14 @@ describe('Login E2e', () => {
     cy.get('input[type="password"]').type(password);
     cy.get("button[type='submit']").click();
 
+    cy.wait('@loginRequest').then((interception) => {
+      // Log response ke Cypress Runner console
+      cy.log('Response status:', interception.response.statusCode);
+      cy.log('Response body:', JSON.stringify(interception.response.body));
+    });
+
     cy.location('pathname').should('not.equal', '/login');
     cy.location('pathname').should('equal', '/');
-    cy.wait('@loginRequest').then((interception) => {
-    cy.log(JSON.stringify(interception.response)); // ini akan tampil di output Cypress
-  });
   });
 
 });
