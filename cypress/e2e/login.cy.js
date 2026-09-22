@@ -8,7 +8,6 @@
  * should redirect to / when credential is match
  */
 
-
 describe('Login E2e', () => {
   beforeEach(() => {
     Cypress.on('uncaught:exception', (err) => {
