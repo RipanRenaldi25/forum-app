@@ -1,4 +1,4 @@
-import { createThread, getAllThreads } from '../../utils/api';
+import { createThread, downVoteThread, getAllThreads, upVoteThread } from '../../utils/api';
 import ActionType from './ActionType';
 
 export const getThreadsActionCreator = (threads) => ({
@@ -55,3 +55,12 @@ export const upVoteThreadActionCreator = (threadId, userId) => ({
     userId
   }
 });
+
+export const asyncUpVoteThread = (threadId, userId) => async (dispatch) => {
+  try {
+    const { data } = await upVoteThread(threadId);
+    dispatch(upVoteThreadActionCreator(threadId, userId));
+  } catch (err) {
+    console.error(err.message);
+  }
+};
