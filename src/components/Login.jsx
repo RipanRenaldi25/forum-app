@@ -11,10 +11,12 @@ function Login() {
     e.preventDefault();
     dispatch(asyncLoginUser(inputValue));
   }
+
   const onChangeInputHandler = ({ target }) => {
     const { name, value } = target;
     setInputValue((prevState) => ({ ...prevState, [name]: value }));
   };
+
   return (
     <form
       className='relative mx-auto w-full max-w-md rounded-3xl border border-white/10 bg-white/[0.07] px-8 py-10 shadow-2xl shadow-black/30'

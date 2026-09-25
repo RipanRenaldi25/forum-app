@@ -2,12 +2,13 @@
  * Should show alert correctly when register is failed
  * Should register correctly when credential is correct
  * Should dispatch correctly when logout
- * Should dispatch action and set token to localStorage when login is success
+ * Should dispatch action correctly and set token to localStorage when login is success
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as api from '../../utils/api';
 import { asyncLoginUser, asyncRegistUser, asyncUnsetAuthUser, setAuthUser, unSetAuthUser } from './Action';
 import userReducer from './userReducer';
+import { getUserProfileActionCreator } from '../userProfile/Action';
 
 describe('Users Action', () => {
   beforeEach(() => {
@@ -62,7 +63,7 @@ describe('Users Action', () => {
     expect(dispatch).toHaveBeenCalledWith(unSetAuthUser());
   });
 
-  it('Should dispatch action and set token to localStorage when login is success', async () => {
+  it('Should dispatch action correctly and set token to localStorage when login is success', async () => {
     const dispatch = vi.fn();
     const fakeToken = 'secret-123';
     const fakePayload = {
@@ -75,12 +76,25 @@ describe('Users Action', () => {
       }
     };
 
+    const fakeProfileResponse = {
+      data: {
+        user: {
+          id: 'user-123',
+          name: 'Test User',
+          email: 'test@gmail.com',
+          avatar: 'testAvatar.png'
+        }
+      }
+    };
+
     vi.spyOn(api, 'loginUser').mockResolvedValue(fakeSuccessResponse);
+    vi.spyOn(api, 'getOwnProfile').mockResolvedValue(fakeProfileResponse);
     const storageStub = vi.spyOn(Storage.prototype, 'setItem');
 
     await asyncLoginUser(fakePayload)(dispatch);
 
-    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledTimes(2);
+    expect(dispatch).toHaveBeenCalledWith(getUserProfileActionCreator(fakeProfileResponse.data));
     expect(dispatch).toHaveBeenCalledWith(setAuthUser(fakeToken));
     expect(storageStub).toHaveBeenCalledWith('AUTH_TOKEN', fakeToken);
   });

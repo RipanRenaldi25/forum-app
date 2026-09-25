@@ -1,4 +1,4 @@
-import { createThread, getAllThreads } from '../../utils/api';
+import { createThread, downVoteThread, getAllThreads, upVoteThread } from '../../utils/api';
 import ActionType from './ActionType';
 
 export const getThreadsActionCreator = (threads) => ({
@@ -47,3 +47,26 @@ export const asyncCreateThread =
         alert(message);
       }
     };
+
+export const upVoteThreadActionCreator = (threadId, userId) => ({
+  type: ActionType.upVoteThread,
+  payload: {
+    threadId,
+    userId
+  }
+});
+
+export const asyncUpVoteThread = (threadId, userId) => async (dispatch) => {
+  try {
+    await upVoteThread(threadId,);
+    dispatch(upVoteThreadActionCreator(threadId, userId));
+  } catch (err) {
+    if (err.status === 401) {
+      alert('You must be logged in to upvote a thread.');
+      return;
+    }
+    const errMessage = err.response?.data?.message || err.message || 'An error occurred while upvoting the thread.';
+    alert(errMessage);
+    console.error(errMessage);
+  }
+};

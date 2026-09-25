@@ -6,11 +6,15 @@
  * asyncCreateThread
  *  - Should called allert with error message when addThread is failed
  *  - Should dispatch correctly when adding new thread is success
+ *
+ * asyncUpVoteThread
+ * - Should dispatch correctly when upvoting thread is success
+ * - Should dispatch correctly when upvoting thread is failed
  */
 
 import { describe, expect, it, vi } from 'vitest';
 import * as api from '../../utils/api';
-import { asyncCreateThread, asyncGetThread, createThreadActionCreator, filterThreadActionCreator, getThreadsActionCreator } from './Action';
+import { asyncCreateThread, asyncGetThread, asyncUpVoteThread, createThreadActionCreator, filterThreadActionCreator, getThreadsActionCreator, upVoteThreadActionCreator } from './Action';
 
 describe('Thread Action Thunk', () => {
   describe('asyncGetThread', () => {
@@ -109,6 +113,27 @@ describe('Thread Action Thunk', () => {
       expect(dispatch).toHaveBeenCalledWith(createThreadActionCreator(fakePayload));
       expect(dispatch).toHaveBeenCalledWith(filterThreadActionCreator());
 
+    });
+  });
+
+  describe('asyncUpVoteThread', () => {
+    it('Should dispatch correctly when upvoting thread is success', async () => {
+      const dispatch = vi.fn();
+      const fakeResponse = {
+        data: {
+          id: 1,
+          userId: 1,
+          threadId: 1,
+          voteType: 1
+        }
+      };
+
+      vi.spyOn(api, 'upVoteThread').mockResolvedValue(fakeResponse);
+
+      await asyncUpVoteThread(fakeResponse.data.threadId, fakeResponse.data.userId)(dispatch);
+
+      expect(dispatch).toHaveBeenCalledOnce();
+      expect(dispatch).toHaveBeenCalledWith(upVoteThreadActionCreator(fakeResponse.data.threadId, fakeResponse.data.userId));
     });
   });
 });

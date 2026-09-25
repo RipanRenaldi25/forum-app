@@ -21,6 +21,23 @@ const threadReducer = (state = initialState, action = {}) => {
       ...state,
       category: state.threads.map((thread) => thread.category),
     };
+  case ActionType.upVoteThread:
+    return {
+      ...state,
+      threads: state.threads.map((thread) => {
+        const isAlreadyupVoted = thread.upVotesBy.includes(action.payload.userId);
+        if (isAlreadyupVoted){
+          return thread;
+        }
+        if (thread.id === action.payload.threadId) {
+          return {
+            ...thread,
+            upVotesBy:  [...thread.upVotesBy, action.payload.userId]
+          };
+        }
+        return thread;
+      })
+    };
   default: return state;
   }
 };
