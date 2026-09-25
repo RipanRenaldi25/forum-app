@@ -44,4 +44,23 @@ describe('UserProfileThunk Action',  () => {
     expect(dispatch).toHaveBeenCalledOnce();
     expect(dispatch).toHaveBeenCalledWith(getUserProfileActionCreator(fakeResponse.data));
   });
+
+  it('Shoul dispatch correctly when preloading is success', async () => {
+    const fakeResponse = {
+      data: {
+        user: {
+          id: 'user1',
+          name: 'test',
+          avatar: 'test'
+        }
+      }
+    };
+    vi.spyOn(API, 'getOwnProfile').mockResolvedValue(fakeResponse);
+    const dispatch = vi.fn();
+
+    await asyncGetUserProfile()(dispatch);
+
+    expect(dispatch).toHaveBeenCalledOnce();
+    expect(dispatch).toHaveBeenCalledWith(getUserProfileActionCreator(fakeResponse.data));
+  });
 });
