@@ -1,5 +1,6 @@
 import ActionType from './ActionType';
-import { registerUser, loginUser } from '../../utils/api';
+import { registerUser, loginUser, getOwnProfile } from '../../utils/api';
+import { getUserProfileActionCreator } from '../userProfile/Action';
 
 export const setAuthUser = (authUser) => ({
   type: ActionType.setAuthUser,
@@ -40,6 +41,8 @@ export const asyncLoginUser =
         } = await loginUser({ email, password });
         dispatch(setAuthUser(token));
         localStorage.setItem('AUTH_TOKEN', token);
+        const { data } = await getOwnProfile();
+        dispatch(getUserProfileActionCreator(data));
       } catch (err) {
         const message = err.response?.data?.message ?? err.message ?? 'Terjadi kesalahan jaringan';
         alert(message);
