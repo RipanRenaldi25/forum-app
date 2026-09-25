@@ -17,11 +17,15 @@ function ThreadItem({
   ownerAvatar,
 }) {
   const dispatch = useDispatch();
-  const state = useSelector((state) => state);
-  console.log({ state });
+  const { user } = useSelector((state) => state.profile);
+  const isUpVoted = user && upVotesBy.includes(user.id);
+  console.log({ isUpVoted });
 
   const handleUpVote = (e) => {
-    dispatch(asyncUpVoteThread(id));
+    if (!user){
+      return;
+    }
+    dispatch(asyncUpVoteThread(id, user.id));
   };
 
   return (
@@ -43,10 +47,10 @@ function ThreadItem({
           <div className='flex items-center'>
             <button
               type='button'
-              className='cursor-pointer text-slate-400 hover:text-cyan-400 transition-colors'
+              className={'cursor-pointer text-slate-400 hover:text-cyan-400 transition-colors'}
               onClick={handleUpVote}
             >
-              <FaThumbsUp />
+              <FaThumbsUp className={`text-cyan-400 ${isUpVoted ? 'text-cyan-400' : ''}`}/>
             </button>
             <span className='ml-1'>{getTotalVote(upVotesBy)}</span>
           </div>

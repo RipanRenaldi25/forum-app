@@ -56,10 +56,9 @@ export const upVoteThreadActionCreator = (threadId, userId) => ({
   }
 });
 
-export const asyncUpVoteThread = (threadId) => async (dispatch) => {
+export const asyncUpVoteThread = (threadId, userId) => async (dispatch) => {
   try {
-    const { data } = await upVoteThread(threadId);
-    const userId = data.userId;
+    await upVoteThread(threadId,);
     dispatch(upVoteThreadActionCreator(threadId, userId));
   } catch (err) {
     if (err.status === 401) {

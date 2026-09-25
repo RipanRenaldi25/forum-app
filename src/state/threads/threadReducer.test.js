@@ -105,13 +105,13 @@ describe('Thread Reducer', () => {
           id: 1,
           title: 'Hello',
           body: 'This is body test',
-          upvotesBy: []
+          upVotesBy: []
         },
         {
           id: 2,
           title: 'Hello2',
           body: 'This is body test2',
-          upvotesBy: []
+          upVotesBy: []
         }
       ],
     };
@@ -127,7 +127,7 @@ describe('Thread Reducer', () => {
       ...initialState,
       threads: initialState.threads.map((thread) => ({
         ...thread,
-        upvotesBy: thread.id === 1 ? [...thread.upvotesBy, 'user-1'] : thread.upvotesBy
+        upVotesBy: thread.id === 1 ? [...thread.upVotesBy, 'user-1'] : thread.upVotesBy
       }))
     });
   });
