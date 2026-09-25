@@ -21,6 +21,19 @@ const threadReducer = (state = initialState, action = {}) => {
       ...state,
       category: state.threads.map((thread) => thread.category),
     };
+  case ActionType.upVoteThread:
+    return {
+      ...state,
+      threads: state.threads.map((thread) => {
+        if (thread.id === action.payload.threadId) {
+          return {
+            ...thread,
+            upvotesBy: [...thread.upvotesBy, action.payload.userId]
+          };
+        }
+        return thread;
+      })
+    };
   default: return state;
   }
 };

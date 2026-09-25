@@ -80,3 +80,48 @@ export const getAllLeaderBoard = async () => {
   );
   return response.data;
 };
+
+export const upVoteThread = async (threadId) => {
+  try {
+    const response = await axios.post(`${import.meta.env.VITE_API_URL}/threads/${threadId}/up-vote`, {}, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('AUTH_TOKEN')}`
+      }
+    });
+    const data = await response.data;
+    return data;
+  } catch (err) {
+    console.error('[ERROR] upVoteThread:', err);
+    return err.message;
+  }
+};
+
+export const downVoteThread = async (threadId) => {
+  try {
+    const response = await axios.post(`${import.meta.env.VITE_API_URL}/threads/${threadId}/down-vote`, {}, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('AUTH_TOKEN')}`
+      }
+    });
+    const data = await response.data;
+    return data;
+  } catch (err) {
+    console.error('[ERROR] downVoteThread:', err);
+    return err.message;
+  }
+};
+
+export const neutralVoteThread = async (threadId) =>{
+  try {
+    const response = await axios.post(`${import.meta.env.VITE_API_URL}/threads/${threadId}/neutral-vote`, {}, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('AUTH_TOKEN')}`
+      }
+    });
+    const data = await response.data;
+    return data;
+  } catch (err) {
+    console.error('[ERROR] neutralVoteThread:', err);
+    return err.message;
+  }
+};

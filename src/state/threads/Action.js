@@ -47,3 +47,11 @@ export const asyncCreateThread =
         alert(message);
       }
     };
+
+export const upVoteThreadActionCreator = (threadId, userId) => ({
+  type: ActionType.upVoteThread,
+  payload: {
+    threadId,
+    userId
+  }
+});
