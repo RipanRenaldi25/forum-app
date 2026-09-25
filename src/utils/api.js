@@ -82,18 +82,13 @@ export const getAllLeaderBoard = async () => {
 };
 
 export const upVoteThread = async (threadId) => {
-  try {
-    const response = await axios.post(`${import.meta.env.VITE_API_URL}/threads/${threadId}/up-vote`, {}, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('AUTH_TOKEN')}`
-      }
-    });
-    const data = await response.data;
-    return data;
-  } catch (err) {
-    console.error('[ERROR] upVoteThread:', err);
-    return err.message;
-  }
+  const response = await axios.post(`${import.meta.env.VITE_API_URL}/threads/${threadId}/up-vote`, {}, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('AUTH_TOKEN')}`
+    }
+  });
+  const data = await response.data;
+  return data;
 };
 
 export const downVoteThread = async (threadId) => {

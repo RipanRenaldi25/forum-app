@@ -56,11 +56,18 @@ export const upVoteThreadActionCreator = (threadId, userId) => ({
   }
 });
 
-export const asyncUpVoteThread = (threadId, userId) => async (dispatch) => {
+export const asyncUpVoteThread = (threadId) => async (dispatch) => {
   try {
     const { data } = await upVoteThread(threadId);
+    const userId = data.userId;
     dispatch(upVoteThreadActionCreator(threadId, userId));
   } catch (err) {
-    console.error(err.message);
+    if (err.status === 401) {
+      alert('You must be logged in to upvote a thread.');
+      return;
+    }
+    const errMessage = err.response?.data?.message || err.message || 'An error occurred while upvoting the thread.';
+    alert(errMessage);
+    console.error(errMessage);
   }
 };
