@@ -2,7 +2,7 @@ import { FaRegCommentDots, FaThumbsDown, FaThumbsUp } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { cutText, getTotalVote, parseDate, removeTags } from '../utils/utils';
-import { asyncUpVoteThread } from '../state/threads/Action';
+import { asyncNeutralVoteThread, asyncUpVoteThread } from '../state/threads/Action';
 
 function ThreadItem({
   title,
@@ -17,15 +17,21 @@ function ThreadItem({
   ownerAvatar,
 }) {
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.profile);
+  const { user  } = useSelector((state) => state.profile ?? { user: null });
   const isUpVoted = user && upVotesBy.includes(user.id);
-  console.log({ isUpVoted });
 
-  const handleUpVote = (e) => {
+  const handleUpVote = () => {
     if (!user){
       return;
     }
     dispatch(asyncUpVoteThread(id, user.id));
+  };
+
+  const handleNeutralVote = () => {
+    if (!isUpVoted) {
+      return;
+    }
+    dispatch(asyncNeutralVoteThread(id, user.id));
   };
 
   return (
@@ -48,9 +54,9 @@ function ThreadItem({
             <button
               type='button'
               className={'cursor-pointer text-slate-400 hover:text-cyan-400 transition-colors'}
-              onClick={handleUpVote}
+              onClick={isUpVoted ? handleNeutralVote : handleUpVote}
             >
-              <FaThumbsUp className={`text-cyan-400 ${isUpVoted ? 'text-cyan-400' : ''}`}/>
+              <FaThumbsUp className={`${isUpVoted ? 'text-cyan-400' : ''}`}/>
             </button>
             <span className='ml-1'>{getTotalVote(upVotesBy)}</span>
           </div>

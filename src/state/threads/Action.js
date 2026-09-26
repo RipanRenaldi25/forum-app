@@ -1,4 +1,4 @@
-import { createThread, downVoteThread, getAllThreads, upVoteThread } from '../../utils/api';
+import { createThread, downVoteThread, getAllThreads, neutralVoteThread, upVoteThread } from '../../utils/api';
 import ActionType from './ActionType';
 
 export const getThreadsActionCreator = (threads) => ({
@@ -66,6 +66,31 @@ export const asyncUpVoteThread = (threadId, userId) => async (dispatch) => {
       return;
     }
     const errMessage = err.response?.data?.message || err.message || 'An error occurred while upvoting the thread.';
+    alert(errMessage);
+    console.error(errMessage);
+  }
+};
+
+export const neutralVoteThreadActionCreator = (threadId, userId) => {
+  return {
+    type: ActionType.neutralVoteThread,
+    payload: {
+      threadId,
+      userId
+    }
+  };
+};
+
+export const asyncNeutralVoteThread = (threadId, userId) => async (dispatch) => {
+  try {
+    await neutralVoteThread(threadId);
+    dispatch(neutralVoteThreadActionCreator(threadId, userId));
+  } catch (err) {
+    if (err.status === 401) {
+      alert('You must be logged in to neutral vote a thread.');
+      return;
+    }
+    const errMessage = err.response?.data?.message || err.message || 'An error occurred while neutral voting the thread.';
     alert(errMessage);
     console.error(errMessage);
   }

@@ -25,6 +25,9 @@ const threadReducer = (state = initialState, action = {}) => {
     return {
       ...state,
       threads: state.threads.map((thread) => {
+        if (thread.id !== action.payload.threadId) {
+          return thread;
+        }
         const isAlreadyupVoted = thread.upVotesBy.includes(action.payload.userId);
         if (isAlreadyupVoted){
           return thread;
@@ -35,7 +38,22 @@ const threadReducer = (state = initialState, action = {}) => {
             upVotesBy:  [...thread.upVotesBy, action.payload.userId]
           };
         }
-        return thread;
+      })
+    };
+  case ActionType.neutralVoteThread:
+    return {
+      ...state,
+      threads: state.threads.map((thread) => {
+        if (thread.id !== action.payload.threadId) {
+          return thread;
+        }
+        const isUpVoted = thread.upVotesBy.includes(action.payload.userId);
+        const isDownVoted = thread.downVotesBy.includes(action.payload.userId);
+        return {
+          ...thread,
+          upVotesBy: isUpVoted ? thread.upVotesBy.filter((userId) => userId !== action.payload.userId) : thread.upVotesBy,
+          downVotesBy: isDownVoted ? thread.downVotesBy.filter((userId) => userId !== action.payload.userId) : thread.downVotesBy
+        };
       })
     };
   default: return state;
