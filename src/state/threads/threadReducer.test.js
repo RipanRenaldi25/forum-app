@@ -8,7 +8,7 @@
 import { describe, expect, it } from 'vitest';
 import threadReducer from './threadReducer';
 import ActionType from './ActionType';
-import { createThreadActionCreator, filterThreadActionCreator, getThreadsActionCreator, upVoteThreadActionCreator } from './Action';
+import { createThreadActionCreator, downVoteThreadActionCreator, filterThreadActionCreator, getThreadsActionCreator, neutralVoteThreadActionCreator, upVoteThreadActionCreator } from './Action';
 
 
 describe('Thread Reducer', () => {
@@ -105,13 +105,15 @@ describe('Thread Reducer', () => {
           id: 1,
           title: 'Hello',
           body: 'This is body test',
-          upVotesBy: []
+          upVotesBy: [],
+          downVotesBy: [],
         },
         {
           id: 2,
           title: 'Hello2',
           body: 'This is body test2',
-          upVotesBy: []
+          upVotesBy: [],
+          downVotesBy: [],
         }
       ],
     };
@@ -129,6 +131,140 @@ describe('Thread Reducer', () => {
         ...thread,
         upVotesBy: thread.id === 1 ? [...thread.upVotesBy, 'user-1'] : thread.upVotesBy
       }))
+    });
+  });
+
+  it('Should neutral vote to thread when given by action NEUTRAL_VOTE_THREAD', () => {
+    const initialThread = [{
+      id: 1,
+      title: 'Hello',
+      body: 'This is body test',
+      downVotesBy: [],
+      upVotesBy: ['user-1']
+    },
+    {
+      id: 2,
+      title: 'Hello2',
+      body: 'This is body test2',
+      downVotesBy: ['user-1'],
+      upVotesBy: []
+    }
+    ];
+    const initialState = {
+      threads: initialThread,
+      category: []
+    };
+
+    const nextState = threadReducer(initialState, neutralVoteThreadActionCreator(1, 'user-1'));
+
+    expect(nextState).toEqual({
+      ...initialState,
+      threads: initialState.threads.map((thread) => {
+        let isUpVoted = false;
+        let isDownVoted = false;
+        if (thread.id === 1) {
+          isUpVoted = thread.upVotesBy.includes('user-1');
+          isDownVoted = thread.downVotesBy.includes('user-1');
+        }
+        return ({
+          ...thread,
+          upVotesBy: isUpVoted ? thread.upVotesBy.filter((userId) => userId !== 'user-1') : thread.upVotesBy,
+          downVotesBy: isDownVoted ? thread.downVotesBy.filter((userId) => userId !== 'user-1') : thread.downVotesBy
+        });
+      })
+    });
+  });
+
+  it('Should add downvote to thread when given by action DOWNVOTE_THREAD', () => {
+    const initialThread = [{
+      id: 1,
+      title: 'Hello',
+      body: 'This is body test',
+      downVotesBy: [],
+      upVotesBy: []
+    },
+    {
+      id: 2,
+      title: 'Hello2',
+      body: 'This is body test2',
+      downVotesBy: [],
+      upVotesBy: []
+    }
+    ];
+    const initialState = {
+      threads: initialThread,
+      category: []
+    };
+
+    const nextState = threadReducer(initialState, {
+      type: ActionType.downVoteThread,
+      payload: {
+        threadId: 1,
+        userId: 'user-1'
+      }
+    });
+
+    expect(nextState).toEqual({
+      ...initialState,
+      threads: initialState.threads.map((thread) => ({
+        ...thread,
+        downVotesBy: thread.id === 1 ? [...thread.downVotesBy, 'user-1'] : thread.downVotesBy
+      }))
+    });
+  });
+
+  it('Should toggle vote when user has already voted', () => {
+    const initialThread = [
+      {
+        id: 1,
+        title: 'Hello',
+        body: 'This is body test',
+        upVotesBy: ['user-1'],
+        downVotesBy: []
+      },
+      {
+        id: 2,
+        title: 'Hello2',
+        body: 'This is body test2',
+        upVotesBy: [],
+        downVotesBy: ['user-1']
+      }
+    ];
+
+    const initialState = {
+      threads: initialThread,
+      category: []
+    };
+
+    const nextState = threadReducer(initialState, upVoteThreadActionCreator(2, 'user-1'));
+    const nextState2 = threadReducer(initialState, downVoteThreadActionCreator(1, 'user-1'));
+
+    expect(nextState2).toEqual({
+      ...initialState,
+      threads: initialState.threads.map((thread) => {
+        if (thread.id === 1) {
+          return {
+            ...thread,
+            upVotesBy: thread.upVotesBy.filter((userId) => userId !== 'user-1'),
+            downVotesBy: [...thread.downVotesBy, 'user-1']
+          };
+        }
+        return thread;
+      })
+    });
+
+    expect(nextState).toEqual({
+      ...initialState,
+      threads: initialState.threads.map((thread) => {
+        if (thread.id === 2) {
+          return {
+            ...thread,
+            upVotesBy: [...thread.upVotesBy, 'user-1'],
+            downVotesBy: thread.downVotesBy.filter((userId) => userId !== 'user-1')
+          };
+        }
+        return thread;
+      })
     });
   });
 });

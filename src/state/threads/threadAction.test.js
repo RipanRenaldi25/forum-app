@@ -14,7 +14,7 @@
 
 import { describe, expect, it, vi } from 'vitest';
 import * as api from '../../utils/api';
-import { asyncCreateThread, asyncGetThread, asyncUpVoteThread, createThreadActionCreator, filterThreadActionCreator, getThreadsActionCreator, upVoteThreadActionCreator } from './Action';
+import { asyncCreateThread, asyncDownVoteThread, asyncGetThread, asyncNeutralVoteThread, asyncUpVoteThread, createThreadActionCreator, downVoteThreadActionCreator, filterThreadActionCreator, getThreadsActionCreator, neutralVoteThreadActionCreator, upVoteThreadActionCreator } from './Action';
 
 describe('Thread Action Thunk', () => {
   describe('asyncGetThread', () => {
@@ -130,10 +130,165 @@ describe('Thread Action Thunk', () => {
 
       vi.spyOn(api, 'upVoteThread').mockResolvedValue(fakeResponse);
 
-      await asyncUpVoteThread(fakeResponse.data.threadId, fakeResponse.data.userId)(dispatch);
+      await asyncUpVoteThread(fakeResponse.data.threadId, fakeResponse.data.userId)(dispatch, () => ({
+        threads: {
+          threads: [
+            {
+              id: 1,
+              title: 'Hello',
+              body: 'This is body test',
+              category: 'react',
+              upVotesBy: [],
+              downVotesBy: []
+            }
+          ]
+        }
+      }));
 
       expect(dispatch).toHaveBeenCalledOnce();
       expect(dispatch).toHaveBeenCalledWith(upVoteThreadActionCreator(fakeResponse.data.threadId, fakeResponse.data.userId));
+    });
+
+    it('Should dispatch correctly when upvoting thread is failed', async () => {
+      const dispatch = vi.fn();
+      const fakeResponse = {
+        data: {
+          id: 1,
+          userId: 'user-1',
+          threadId: 1,
+          voteType: 1
+        }
+      };
+      const fakeErrorResponse = {
+        response: {
+          status: 401,
+          data: {
+            message: 'You must be logged in to upvote a thread.'
+          }
+        }
+      };
+
+      window.alert = vi.fn();
+      vi.spyOn(api, 'upVoteThread').mockRejectedValue(fakeErrorResponse);
+
+      await asyncUpVoteThread(fakeResponse.data.threadId, fakeResponse.data.userId)(dispatch, () => ({
+        threads: {
+          threads: [
+            {
+              id: 1,
+              title: 'Hello',
+              body: 'This is body test',
+              category: 'react',
+              upVotesBy: [],
+              downVotesBy: ['user-1']
+            }
+          ]
+        }
+      }));
+
+      expect(dispatch).toHaveBeenCalledTimes(2);
+      expect(dispatch).toHaveBeenCalledWith(upVoteThreadActionCreator(fakeResponse.data.threadId, fakeResponse.data.userId));
+      expect(dispatch).toHaveBeenCalledWith(downVoteThreadActionCreator(fakeResponse.data.threadId, fakeResponse.data.userId));
+      expect(window.alert).toHaveBeenCalledOnce();
+      expect(window.alert).toHaveBeenCalledWith('You must be logged in to upvote a thread.');
+    });
+  });
+
+  describe('asyncNeutralVoteThread', () => {
+    it('Should dispatch correctly when neutral voting thread is success', async () => {
+      const dispatch = vi.fn();
+      const fakeResponse = {
+        data: {
+          id: 1,
+          userId: 1,
+          threadId: 1,
+          voteType: 0
+        }
+      };
+
+      vi.spyOn(api, 'neutralVoteThread').mockResolvedValue(fakeResponse);
+
+      await asyncNeutralVoteThread(fakeResponse.data.threadId, fakeResponse.data.userId)(dispatch);
+
+      expect(dispatch).toHaveBeenCalledOnce();
+      expect(dispatch).toHaveBeenCalledWith(neutralVoteThreadActionCreator(fakeResponse.data.threadId, fakeResponse.data.userId));
+    });
+  });
+
+  describe('asyncDownVoteThread', () => {
+    it('Should dispatch correctly when downvoting thread is success', async () => {
+      const dispatch = vi.fn();
+      const fakeResponse = {
+        data: {
+          id: 1,
+          userId: 1,
+          threadId: 1,
+          voteType: -1
+        }
+      };
+      vi.spyOn(api, 'downVoteThread').mockResolvedValue(fakeResponse);
+
+      await asyncDownVoteThread(fakeResponse.data.threadId, fakeResponse.data.userId)(dispatch, () => ({
+        threads: {
+          threads: [
+            {
+              id: 1,
+              title: 'Hello',
+              body: 'This is body test',
+              category: 'react',
+              upVotesBy: [],
+              downVotesBy: []
+            }
+          ]
+        }
+      }));
+
+      expect(dispatch).toHaveBeenCalledOnce();
+      expect(dispatch).toHaveBeenCalledWith(downVoteThreadActionCreator(fakeResponse.data.threadId, fakeResponse.data.userId));
+    });
+
+    it('Should dispatch correctly when downvoting thread is failed', async () => {
+      const dispatch = vi.fn();
+      const fakeResponse = {
+        data: {
+          id: 1,
+          userId: 'user-1',
+          threadId: 1,
+          voteType: -1
+        }
+      };
+      const fakeErrorResponse = {
+        response: {
+          status: 401,
+          data: {
+            message: 'You must be logged in to downvote a thread.'
+          }
+        }
+      };
+
+      window.alert = vi.fn();
+      vi.spyOn(api, 'downVoteThread').mockRejectedValue(fakeErrorResponse);
+
+      await asyncDownVoteThread(fakeResponse.data.threadId, fakeResponse.data.userId)(dispatch, () => ({
+        threads: {
+          threads: [
+            {
+              id: 1,
+              title: 'Hello',
+              body: 'This is body test',
+              category: 'react',
+              upVotesBy: ['user-1'],
+              downVotesBy: []
+            }
+          ]
+        }
+      }));
+
+      expect(dispatch).toHaveBeenCalledTimes(2);
+      expect(dispatch).toHaveBeenCalledWith(downVoteThreadActionCreator(fakeResponse.data.threadId, fakeResponse.data.userId));
+      expect(dispatch).toHaveBeenCalledWith(upVoteThreadActionCreator(fakeResponse.data.threadId, fakeResponse.data.userId));
+      expect(window.alert).toHaveBeenCalledOnce();
+      expect(window.alert).toHaveBeenCalledWith('You must be logged in to downvote a thread.');
     });
   });
 });
