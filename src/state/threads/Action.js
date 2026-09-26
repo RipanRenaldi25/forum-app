@@ -56,12 +56,25 @@ export const upVoteThreadActionCreator = (threadId, userId) => ({
   }
 });
 
-export const asyncUpVoteThread = (threadId, userId) => async (dispatch) => {
+export const asyncUpVoteThread = (threadId, userId) => async (dispatch, getState) => {
+  const { threads: { threads } } = getState();
+  const targetThread = threads.find((thread) => thread.id === threadId);
+  const isAlreadyUpVoted = targetThread.upVotesBy.includes(userId);
+  if (isAlreadyUpVoted) {
+    return;
+  }
+  dispatch(upVoteThreadActionCreator(threadId, userId));
   try {
     await upVoteThread(threadId);
-    dispatch(upVoteThreadActionCreator(threadId, userId));
   } catch (err) {
-    if (err.status === 401) {
+    const isAlreadyDownVoted = targetThread.downVotesBy.includes(userId);
+    if (isAlreadyDownVoted){
+      dispatch(downVoteThreadActionCreator(threadId, userId));
+    } else {
+      dispatch(neutralVoteThreadActionCreator(threadId, userId));
+    }
+    const statusCode = err.response?.status;
+    if (statusCode === 401) {
       alert('You must be logged in to upvote a thread.');
       return;
     }
@@ -86,7 +99,8 @@ export const asyncNeutralVoteThread = (threadId, userId) => async (dispatch) => 
     await neutralVoteThread(threadId);
     dispatch(neutralVoteThreadActionCreator(threadId, userId));
   } catch (err) {
-    if (err.status === 401) {
+    const statusCode = err.response?.status;
+    if (statusCode === 401) {
       alert('You must be logged in to neutral vote a thread.');
       return;
     }
@@ -106,14 +120,29 @@ export const downVoteThreadActionCreator = (threadId, userId) => {
   };
 };
 
-export const asyncDownVoteThread = (threadId, userId) => async (dispatch) => {
+export const asyncDownVoteThread = (threadId, userId) => async (dispatch, getState) => {
+  const { threads: { threads } } = getState();
+  const targetThread = threads.find((thread) => thread.id === threadId);
+  const isAlreadyDownVoted = targetThread.downVotesBy.includes(userId);
+  if (isAlreadyDownVoted) {
+    return;
+  }
+  dispatch(downVoteThreadActionCreator(threadId, userId));
   try {
     await downVoteThread(threadId);
-    dispatch(downVoteThreadActionCreator(threadId, userId));
   } catch (err) {
-    if (err.status === 401) {
+    const isAlreadyUpVoted = targetThread.upVotesBy.includes(userId);
+    if (isAlreadyUpVoted){
+      dispatch(upVoteThreadActionCreator(threadId, userId));
+    } else {
+      dispatch(neutralVoteThreadActionCreator(threadId, userId));
+    }
+
+    const statusCode = err.response?.status;
+    if (statusCode === 401) {
       alert('You must be logged in to downvote a thread.');
       return;
+
     }
     const errMessage = err.response?.data?.message || err.message || 'An error occurred while downvoting the thread.';
     alert(errMessage);
