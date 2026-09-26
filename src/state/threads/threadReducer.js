@@ -29,13 +29,14 @@ const threadReducer = (state = initialState, action = {}) => {
           return thread;
         }
         const isAlreadyupVoted = thread.upVotesBy.includes(action.payload.userId);
-        if (isAlreadyupVoted){
+        if (isAlreadyupVoted) {
           return thread;
         }
         if (thread.id === action.payload.threadId) {
           return {
             ...thread,
-            upVotesBy:  [...thread.upVotesBy, action.payload.userId]
+            upVotesBy:  [...thread.upVotesBy, action.payload.userId],
+            downVotesBy: thread.downVotesBy.filter((userId) => userId !== action.payload.userId)
           };
         }
       })
@@ -53,6 +54,24 @@ const threadReducer = (state = initialState, action = {}) => {
           ...thread,
           upVotesBy: isUpVoted ? thread.upVotesBy.filter((userId) => userId !== action.payload.userId) : thread.upVotesBy,
           downVotesBy: isDownVoted ? thread.downVotesBy.filter((userId) => userId !== action.payload.userId) : thread.downVotesBy
+        };
+      })
+    };
+  case ActionType.downVoteThread:
+    return {
+      ...state,
+      threads: state.threads.map((thread) => {
+        if (thread.id !== action.payload.threadId) {
+          return thread;
+        }
+        const isAlreadyDownVoted = thread.downVotesBy.includes(action.payload.userId);
+        if (isAlreadyDownVoted) {
+          return thread;
+        }
+        return {
+          ...thread,
+          downVotesBy: [...thread.downVotesBy, action.payload.userId],
+          upVotesBy: thread.upVotesBy.filter((userId) => userId !== action.payload.userId)
         };
       })
     };

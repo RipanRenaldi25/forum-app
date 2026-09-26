@@ -14,7 +14,7 @@
 
 import { describe, expect, it, vi } from 'vitest';
 import * as api from '../../utils/api';
-import { asyncCreateThread, asyncGetThread, asyncUpVoteThread, createThreadActionCreator, filterThreadActionCreator, getThreadsActionCreator, upVoteThreadActionCreator } from './Action';
+import { asyncCreateThread, asyncDownVoteThread, asyncGetThread, asyncNeutralVoteThread, asyncUpVoteThread, createThreadActionCreator, downVoteThreadActionCreator, filterThreadActionCreator, getThreadsActionCreator, neutralVoteThreadActionCreator, upVoteThreadActionCreator } from './Action';
 
 describe('Thread Action Thunk', () => {
   describe('asyncGetThread', () => {
@@ -134,6 +134,47 @@ describe('Thread Action Thunk', () => {
 
       expect(dispatch).toHaveBeenCalledOnce();
       expect(dispatch).toHaveBeenCalledWith(upVoteThreadActionCreator(fakeResponse.data.threadId, fakeResponse.data.userId));
+    });
+  });
+
+  describe('asyncNeutralVoteThread', () => {
+    it('Should dispatch correctly when neutral voting thread is success', async () => {
+      const dispatch = vi.fn();
+      const fakeResponse = {
+        data: {
+          id: 1,
+          userId: 1,
+          threadId: 1,
+          voteType: 0
+        }
+      };
+
+      vi.spyOn(api, 'neutralVoteThread').mockResolvedValue(fakeResponse);
+
+      await asyncNeutralVoteThread(fakeResponse.data.threadId, fakeResponse.data.userId)(dispatch);
+
+      expect(dispatch).toHaveBeenCalledOnce();
+      expect(dispatch).toHaveBeenCalledWith(neutralVoteThreadActionCreator(fakeResponse.data.threadId, fakeResponse.data.userId));
+    });
+  });
+
+  describe('asyncDownVoteThread', () => {
+    it('Should dispatch correctly when downvoting thread is success', async () => {
+      const dispatch = vi.fn();
+      const fakeResponse = {
+        data: {
+          id: 1,
+          userId: 1,
+          threadId: 1,
+          voteType: -1
+        }
+      };
+      vi.spyOn(api, 'downVoteThread').mockResolvedValue(fakeResponse);
+
+      await asyncDownVoteThread(fakeResponse.data.threadId, fakeResponse.data.userId)(dispatch);
+
+      expect(dispatch).toHaveBeenCalledOnce();
+      expect(dispatch).toHaveBeenCalledWith(downVoteThreadActionCreator(fakeResponse.data.threadId, fakeResponse.data.userId));
     });
   });
 });

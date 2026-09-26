@@ -58,7 +58,7 @@ export const upVoteThreadActionCreator = (threadId, userId) => ({
 
 export const asyncUpVoteThread = (threadId, userId) => async (dispatch) => {
   try {
-    await upVoteThread(threadId,);
+    await upVoteThread(threadId);
     dispatch(upVoteThreadActionCreator(threadId, userId));
   } catch (err) {
     if (err.status === 401) {
@@ -91,6 +91,31 @@ export const asyncNeutralVoteThread = (threadId, userId) => async (dispatch) => 
       return;
     }
     const errMessage = err.response?.data?.message || err.message || 'An error occurred while neutral voting the thread.';
+    alert(errMessage);
+    console.error(errMessage);
+  }
+};
+
+export const downVoteThreadActionCreator = (threadId, userId) => {
+  return {
+    type: ActionType.downVoteThread,
+    payload: {
+      threadId,
+      userId
+    }
+  };
+};
+
+export const asyncDownVoteThread = (threadId, userId) => async (dispatch) => {
+  try {
+    await downVoteThread(threadId);
+    dispatch(downVoteThreadActionCreator(threadId, userId));
+  } catch (err) {
+    if (err.status === 401) {
+      alert('You must be logged in to downvote a thread.');
+      return;
+    }
+    const errMessage = err.response?.data?.message || err.message || 'An error occurred while downvoting the thread.';
     alert(errMessage);
     console.error(errMessage);
   }
