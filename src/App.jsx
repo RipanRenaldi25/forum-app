@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Ball from './components/Ball';
@@ -10,9 +10,16 @@ import LeaderBoardPage from './pages/LeaderBoardPage';
 import LoginPage from './pages/LoginPage';
 import NewThreadPage from './pages/NewThreadPage';
 import RegisterPage from './pages/RegisterPage';
+import { useEffect } from 'react';
+import { asyncPreloadProcess } from './state/userProfile/Action';
 
 function App() {
   const { user } = useSelector((states) => states);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(asyncPreloadProcess());
+  }, [dispatch]);
 
   return (
     <>

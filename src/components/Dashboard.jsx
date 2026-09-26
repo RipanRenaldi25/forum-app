@@ -1,19 +1,12 @@
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { asyncGetUserProfile } from '../state';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import Navigation from './Navigation';
 import Profile from './Profile';
 
 function Dashboard() {
-  const dispatch = useDispatch();
   const { profile, user } = useSelector((states) => states);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      dispatch(asyncGetUserProfile());
-    }
-  }, [dispatch, user]);
 
   return (
     <aside className='relative z-20 w-full shrink-0 border-b border-white/10 bg-[#101826]/80 px-4 py-4 backdrop-blur-xl lg:w-72 lg:rounded-3xl lg:border lg:py-8'>

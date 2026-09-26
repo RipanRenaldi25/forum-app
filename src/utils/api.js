@@ -80,3 +80,33 @@ export const getAllLeaderBoard = async () => {
   );
   return response.data;
 };
+
+export const upVoteThread = async (threadId) => {
+  const response = await axios.post(`${import.meta.env.VITE_API_URL}/threads/${threadId}/up-vote`, {}, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('AUTH_TOKEN')}`
+    }
+  });
+  const data = await response.data;
+  return data;
+};
+
+export const downVoteThread = async (threadId) => {
+  const response = await axios.post(`${import.meta.env.VITE_API_URL}/threads/${threadId}/down-vote`, {}, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('AUTH_TOKEN')}`
+    }
+  });
+  const data = await response.data;
+  return data;
+};
+
+export const neutralVoteThread = async (threadId) =>{
+  const response = await axios.post(`${import.meta.env.VITE_API_URL}/threads/${threadId}/neutral-vote`, {}, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('AUTH_TOKEN')}`
+    }
+  });
+  const data = await response.data;
+  return data;
+};
