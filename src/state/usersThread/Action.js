@@ -4,6 +4,7 @@ import {
   downVoteThread,
   getAllUsers,
   getUserDetailByThread,
+  neutralVoteThread,
   upVoteThread,
 } from '../../utils/api';
 import ActionType from './ActionType';
@@ -130,6 +131,29 @@ export const asyncDownVoteDetailThread = (threadId) => async (dispatch, getState
   try {
     await downVoteThread(threadId);
     dispatch(downVoteDetailThreadActionCreator(threadId, user.id));
+  } catch (err) {
+    alert(err.message);
+  }
+};
+
+export const neutralVoteDetailThreadActionCreator = (threadId, userId) => ({
+  type: ActionType.neutralVoteDetailThread,
+  payload: {
+    threadId,
+    userId
+  }
+});
+
+export const asyncNeutralVoteDetailThread = (threadId) => async (dispatch, getState) => {
+  const { profile } = getState();
+  if (!profile){
+    alert('You must be logged in to neutral vote this thread');
+    return;
+  }
+  const { user } = profile;
+  try {
+    await neutralVoteThread(threadId);
+    dispatch(neutralVoteDetailThreadActionCreator(threadId, user.id));
   } catch (err) {
     alert(err.message);
   }

@@ -13,7 +13,7 @@
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as api from '../../utils/api';
-import { addCommentToThreadActionCreator, asyncAddCommentToThread, asyncDownVoteDetailThread, asyncFetchAllUsers, asyncFetchDetailUserThread, asyncUpVoteDetailThread, downVoteDetailThreadActionCreator, fetchAllUsers, fetchDetailUserThread, upVoteDetailThreadActionCreator } from './Action';
+import { addCommentToThreadActionCreator, asyncAddCommentToThread, asyncDownVoteDetailThread, asyncFetchAllUsers, asyncFetchDetailUserThread, asyncNeutralVoteDetailThread, asyncUpVoteDetailThread, downVoteDetailThreadActionCreator, fetchAllUsers, fetchDetailUserThread, neutralVoteDetailThreadActionCreator, upVoteDetailThreadActionCreator } from './Action';
 
 describe('User Thread Thunk Action', () => {
   describe('Async fetch all users', () => {
@@ -230,6 +230,42 @@ describe('User Thread Thunk Action', () => {
 
       expect(dispatch).toHaveBeenCalledOnce();
       expect(dispatch).toHaveBeenCalledWith(downVoteDetailThreadActionCreator(fakeResponse.data.vote.threadId, fakeResponse.data.vote.userId));
+    });
+  });
+
+  describe('asyncNeutralVoteDetailThread', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('Should dispatch correctly when neutral voting detail thread', async () => {
+      const dispatch = vi.fn();
+      const getState = vi.fn().mockReturnValue({
+        profile: {
+          user: {
+            id: 'user-1',
+            name: 'test',
+            avatar: 'test'
+          }
+        }
+      });
+
+      const fakeResponse = {
+        data: {
+          vote: {
+            id: 'vote-1',
+            threadId: 'thread-1',
+            userId: 'user-1',
+            voteType: 0
+          }
+        }
+      };
+
+      vi.spyOn(api, 'neutralVoteThread').mockResolvedValue(fakeResponse);
+      await asyncNeutralVoteDetailThread(fakeResponse.data.vote.threadId, fakeResponse.data.vote.userId)(dispatch, getState);
+
+      expect(dispatch).toHaveBeenCalledOnce();
+      expect(dispatch).toHaveBeenCalledWith(neutralVoteDetailThreadActionCreator(fakeResponse.data.vote.threadId, fakeResponse.data.vote.userId));
     });
   });
 

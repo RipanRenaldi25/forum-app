@@ -50,6 +50,20 @@ function usersThreadReducer(state = initialState, action = {}) {
         downVotesBy: [...state.userDetail.downVotesBy, action.payload.userId]
       }
     };
+  case ActionType.neutralVoteDetailThread:
+  {
+    const isUpVoted = state.userDetail.upVotesBy.includes(action.payload.userId);
+    const isDownVoted = state.userDetail.downVotesBy.includes(action.payload.userId);
+
+    return {
+      ...state,
+      userDetail: {
+        ...state.userDetail,
+        upVotesBy: isUpVoted ? state.userDetail.upVotesBy.filter((userId) => userId !== action.payload.userId) : state.userDetail.upVotesBy,
+        downVotesBy: isDownVoted ? state.userDetail.downVotesBy.filter((userId) => userId !== action.payload.userId) : state.userDetail.downVotesBy
+      }
+    };
+  }
   default:
     return state;
   }

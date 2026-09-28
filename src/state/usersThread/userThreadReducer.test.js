@@ -7,7 +7,7 @@
 
 import { describe, expect, it } from 'vitest';
 import usersThreadReducer from './usersThreadReducer';
-import { addCommentToThreadActionCreator, downVoteDetailThreadActionCreator, fetchAllUsers, fetchDetailUserThread } from './Action';
+import { addCommentToThreadActionCreator, downVoteDetailThreadActionCreator, fetchAllUsers, fetchDetailUserThread, neutralVoteDetailThreadActionCreator } from './Action';
 
 describe('User Thread Reducer', () => {
   it('Should return initial state when given unknown action', () => {
@@ -150,6 +150,58 @@ describe('User Thread Reducer', () => {
       userDetail: {
         ...initialState.userDetail,
         downVotesBy: [...initialState.userDetail.downVotesBy, 'user-1']
+      }
+    });
+  });
+
+  it('Should neutral vote detail thread when upvoting to the user detail when given by NEUTRAL_VOTE_DETAIL_THREAD action type', () => {
+    const initialState = {
+      users: null,
+      userDetail: {
+        id: 'thread-1',
+        title: 'Contoh Thread',
+        body: 'Contoh Body',
+        category: 'Contoh Category',
+        createdAt: new Date().toISOString(),
+        ownerId: 'user-1',
+        upVotesBy: ['user-1'],
+        downVotesBy: [],
+      }
+    };
+
+    const nextState = usersThreadReducer(initialState, neutralVoteDetailThreadActionCreator('thread-1', 'user-1'));
+
+    expect(nextState).toEqual({
+      ...initialState,
+      userDetail: {
+        ...initialState.userDetail,
+        upVotesBy: initialState.userDetail.upVotesBy.filter((userId) => userId !== 'user-1')
+      }
+    });
+  });
+
+  it('Should neutral vote detail thread when downvoting to the user detail when given by NEUTRAL_VOTE_DETAIL_THREAD action type', () => {
+    const initialState = {
+      users: null,
+      userDetail: {
+        id: 'thread-1',
+        title: 'Contoh Thread',
+        body: 'Contoh Body',
+        category: 'Contoh Category',
+        createdAt: new Date().toISOString(),
+        ownerId: 'user-1',
+        upVotesBy: [],
+        downVotesBy: ['user-1'],
+      }
+    };
+
+    const nextState = usersThreadReducer(initialState, neutralVoteDetailThreadActionCreator('thread-1', 'user-1'));
+
+    expect(nextState).toEqual({
+      ...initialState,
+      userDetail: {
+        ...initialState.userDetail,
+        downVotesBy: initialState.userDetail.downVotesBy.filter((userId) => userId !== 'user-1')
       }
     });
   });

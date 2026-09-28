@@ -2,7 +2,7 @@ import { FaThumbsDown, FaThumbsUp } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import useInput from '../hooks/useInput';
-import { asyncAddCommentToThread, asyncDownVoteDetailThread, asyncUpVoteDetailThread } from '../state/usersThread/Action';
+import { asyncAddCommentToThread, asyncDownVoteDetailThread, asyncNeutralVoteDetailThread, asyncUpVoteDetailThread } from '../state/usersThread/Action';
 import { getTotalVote, parseDate, removeTags } from '../utils/utils';
 import CommentInput from './CommentInput';
 import CommentList from './CommentList';
@@ -46,7 +46,7 @@ function Detail({ detail }) {
     if (!isAlreadyUpVoted && !isAlreadyDownVoted) {
       return;
     }
-    dispatch(asyncNeutralVoteThread(detail.id, userProfile.id));
+    dispatch(asyncNeutralVoteDetailThread(detail.id));
   };
 
   const onSubmitHandler = (e) => {
