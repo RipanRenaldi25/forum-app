@@ -3,6 +3,7 @@ import {
   createComment,
   getAllUsers,
   getUserDetailByThread,
+  upVoteThread,
 } from '../../utils/api';
 import ActionType from './ActionType';
 
@@ -39,6 +40,7 @@ export const asyncFetchDetailUserThread = (id) => async (dispatch) => {
     const {
       data: { detailThread },
     } = await getUserDetailByThread(id);
+    console.log({ detailThread });
     dispatch(fetchDetailUserThread(detailThread));
   } catch ({
     response: {
@@ -84,3 +86,27 @@ export const asyncAddCommentToThread =
         alert(message);
       }
     };
+
+
+export const upVoteDetailThreadActionCreator = (threadId, userId) => ({
+  type: ActionType.upVoteDetailThread,
+  payload: {
+    threadId,
+    userId
+  }
+});
+
+export const asyncUpVoteDetailThread = (threadId) => async (dispatch, getState) => {
+  const { profile } = getState();
+  if (!profile){
+    alert('You must be logged in to upvote this thread');
+    return;
+  }
+  const { user } = profile;
+  try {
+    await upVoteThread(threadId);
+    dispatch(upVoteDetailThreadActionCreator(threadId, user.id));
+  } catch (err){
+    alert(err.message);
+  }
+};

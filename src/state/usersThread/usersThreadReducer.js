@@ -1,7 +1,7 @@
 import ActionType from './ActionType';
 
 const initialState = {
-  users: {},
+  users: [],
   userDetail: {},
 };
 
@@ -31,6 +31,17 @@ function usersThreadReducer(state = initialState, action = {}) {
         ],
       },
     };
+  case ActionType.upVoteDetailThread:
+    if (state.userDetail.id === action.payload.threadId) {
+      return {
+        ...state,
+        userDetail: {
+          ...state.userDetail,
+          upVotesBy: [...state.userDetail.upVotesBy, action.payload.userId],
+        },
+      };
+    }
+    return state;
   default:
     return state;
   }

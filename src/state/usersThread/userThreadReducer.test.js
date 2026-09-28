@@ -95,4 +95,63 @@ describe('User Thread Reducer', () => {
       }
     });
   });
+
+  it('Should upvote detail thread to the user detail when given by UPVOTE_DETAIL_THREAD action type', () => {
+    const initialState = {
+      users: null,
+      userDetail: {
+        id: 'thread-1',
+        title: 'Contoh Thread',
+        body: 'Contoh Body',
+        category: 'Contoh Category',
+        createdAt: new Date().toISOString(),
+        ownerId: 'user-1',
+        upVotesBy: [],
+        downVotesBy: [],
+      }
+    };
+
+    const nextState = usersThreadReducer(initialState, {
+      type: 'UP_VOTE_DETAIL_THREAD',
+      payload: {
+        userId: 'user-1',
+        threadId: 'thread-1'
+      }
+    });
+
+    expect(nextState).toEqual({
+      ...initialState,
+      userDetail: {
+        ...initialState.userDetail,
+        upVotesBy: [...initialState.userDetail.upVotesBy, 'user-1']
+      }
+    });
+  });
+
+  // it('Should upvote comment to the user detail when given by UPVOTE_COMMENT action type', () => {
+  //   const initialState = {
+  //     threads: [],
+  //     userDetail: {
+  //       id: 'thread-1',
+  //       title: 'Contoh Thread',
+  //       body: 'Contoh Body',
+  //       category: 'Contoh Category',
+  //       createdAt: new Date().toISOString(),
+  //       ownerId: 'user-1',
+  //       comments: [
+  //         {
+  //           id: 'comment-1',
+  //           content: 'Contoh Comment',
+  //           createdAt: new Date().toISOString(),
+  //           owner: 'user-1',
+  //           upVotesBy: [],
+  //           downVotesBy: [],
+  //         }
+  //       ]
+  //     }
+  //   };
+  //   const nextState = usersThreadReducer(initialState, upVoteCommentActionCreator('user-1', 'comment-1'));
+
+  //   expect(nextState).toEqual({})
+  // });
 });

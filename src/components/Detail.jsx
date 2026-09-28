@@ -2,15 +2,23 @@ import { FaThumbsDown, FaThumbsUp } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import useInput from '../hooks/useInput';
-import { asyncAddCommentToThread } from '../state/usersThread/Action';
+import { asyncAddCommentToThread, asyncUpVoteDetailThread } from '../state/usersThread/Action';
 import { getTotalVote, parseDate, removeTags } from '../utils/utils';
 import CommentInput from './CommentInput';
 import CommentList from './CommentList';
+import { asyncNeutralVoteThread, asyncUpVoteThread } from '../state/threads/Action';
 
 function Detail({ detail }) {
   const [commentValue, onChangeCommentValue, onClear] = useInput();
   const dispatch = useDispatch();
-  const { user } = useSelector((states) => states);
+  const { user, profile } = useSelector((states) => states);
+  if (!profile){
+    return;
+  }
+  const { user: userProfile } = profile;
+  const isAlreadyUpVoted = detail.upVotesBy?.includes(userProfile.id);
+  const isAlreadyDownVoted = detail.downVotesBy?.includes(userProfile.id);
+  console.log({ detail, isAlreadyUpVoted, profile: userProfile  });
 
   if (detail.id === undefined) {
     return (
@@ -19,6 +27,27 @@ function Detail({ detail }) {
       </div>
     );
   }
+
+  const onUpVotesThreadHandler = () => {
+    if (isAlreadyUpVoted) {
+      return;
+    }
+    dispatch(asyncUpVoteDetailThread(detail.id));
+  };
+
+  const onDownVotesThreadHandler = () => {
+    if (isAlreadyDownVoted) {
+      return;
+    }
+    dispatch(asyncUpVoteThread(detail.id, userProfile.id));
+  };
+
+  const onNeutralVotesThreadHandler = () => {
+    if (!isAlreadyUpVoted && !isAlreadyDownVoted) {
+      return;
+    }
+    dispatch(asyncNeutralVoteThread(detail.id, userProfile.id));
+  };
 
   const onSubmitHandler = (e) => {
     e.preventDefault();
@@ -39,14 +68,14 @@ function Detail({ detail }) {
       </p>
       <div className='flex flex-wrap items-center gap-4 text-sm text-slate-300'>
         <div className='flex items-center'>
-          <button type='button'>
-            <FaThumbsUp />
+          <button type='button' className="cursor-pointer" onClick={isAlreadyUpVoted ? onNeutralVotesThreadHandler : onUpVotesThreadHandler }>
+            <FaThumbsUp className={isAlreadyUpVoted ? 'text-cyan-400' : 'text-slate-400'} />
           </button>
           <span className='ml-1'>{getTotalVote(detail.upVotesBy)}</span>
         </div>
         <div className='flex items-center'>
-          <button type='button'>
-            <FaThumbsDown />
+          <button type='button' className="cursor-pointer" onClick={isAlreadyDownVoted ? onNeutralVotesThreadHandler : onDownVotesThreadHandler }>
+            <FaThumbsDown className={isAlreadyDownVoted ? 'text-amber-400' : 'text-slate-400'} />
           </button>
           <span className='ml-1'>{getTotalVote(detail.downVotesBy)}</span>
         </div>
