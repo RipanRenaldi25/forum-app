@@ -1,6 +1,7 @@
 // import { showLoading, hideLoading } from 'react-redux-loading-bar';
 import {
   createComment,
+  downVoteThread,
   getAllUsers,
   getUserDetailByThread,
   upVoteThread,
@@ -107,6 +108,29 @@ export const asyncUpVoteDetailThread = (threadId) => async (dispatch, getState) 
     await upVoteThread(threadId);
     dispatch(upVoteDetailThreadActionCreator(threadId, user.id));
   } catch (err){
+    alert(err.message);
+  }
+};
+
+export const downVoteDetailThreadActionCreator = (threadId, userId) => ({
+  type: ActionType.downVoteDetailThread,
+  payload: {
+    threadId,
+    userId
+  }
+});
+
+export const asyncDownVoteDetailThread = (threadId) => async (dispatch, getState) => {
+  const { profile } = getState();
+  if (!profile){
+    alert('You must be logged in to downvote this thread');
+    return;
+  }
+  const { user } = profile;
+  try {
+    await downVoteThread(threadId);
+    dispatch(downVoteDetailThreadActionCreator(threadId, user.id));
+  } catch (err) {
     alert(err.message);
   }
 };

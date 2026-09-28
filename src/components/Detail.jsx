@@ -2,7 +2,7 @@ import { FaThumbsDown, FaThumbsUp } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import useInput from '../hooks/useInput';
-import { asyncAddCommentToThread, asyncUpVoteDetailThread } from '../state/usersThread/Action';
+import { asyncAddCommentToThread, asyncDownVoteDetailThread, asyncUpVoteDetailThread } from '../state/usersThread/Action';
 import { getTotalVote, parseDate, removeTags } from '../utils/utils';
 import CommentInput from './CommentInput';
 import CommentList from './CommentList';
@@ -39,7 +39,7 @@ function Detail({ detail }) {
     if (isAlreadyDownVoted) {
       return;
     }
-    dispatch(asyncUpVoteThread(detail.id, userProfile.id));
+    dispatch(asyncDownVoteDetailThread(detail.id));
   };
 
   const onNeutralVotesThreadHandler = () => {
@@ -75,7 +75,7 @@ function Detail({ detail }) {
         </div>
         <div className='flex items-center'>
           <button type='button' className="cursor-pointer" onClick={isAlreadyDownVoted ? onNeutralVotesThreadHandler : onDownVotesThreadHandler }>
-            <FaThumbsDown className={isAlreadyDownVoted ? 'text-amber-400' : 'text-slate-400'} />
+            <FaThumbsDown className={isAlreadyDownVoted ? 'text-red-400' : 'text-slate-400'} />
           </button>
           <span className='ml-1'>{getTotalVote(detail.downVotesBy)}</span>
         </div>

@@ -42,6 +42,14 @@ function usersThreadReducer(state = initialState, action = {}) {
       };
     }
     return state;
+  case ActionType.downVoteDetailThread:
+    return {
+      ...state,
+      userDetail: {
+        ...state.userDetail,
+        downVotesBy: [...state.userDetail.downVotesBy, action.payload.userId]
+      }
+    };
   default:
     return state;
   }

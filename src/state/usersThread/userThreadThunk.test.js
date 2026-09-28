@@ -13,7 +13,7 @@
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as api from '../../utils/api';
-import { addCommentToThreadActionCreator, asyncAddCommentToThread, asyncFetchAllUsers, asyncFetchDetailUserThread, asyncUpVoteDetailThread, fetchAllUsers, fetchDetailUserThread, upVoteDetailThreadActionCreator } from './Action';
+import { addCommentToThreadActionCreator, asyncAddCommentToThread, asyncDownVoteDetailThread, asyncFetchAllUsers, asyncFetchDetailUserThread, asyncUpVoteDetailThread, downVoteDetailThreadActionCreator, fetchAllUsers, fetchDetailUserThread, upVoteDetailThreadActionCreator } from './Action';
 
 describe('User Thread Thunk Action', () => {
   describe('Async fetch all users', () => {
@@ -194,6 +194,42 @@ describe('User Thread Thunk Action', () => {
       expect(dispatch).toHaveBeenCalledOnce();
       expect(dispatch).toHaveBeenCalledWith(upVoteDetailThreadActionCreator(fakeResponse.data.vote.threadId, fakeResponse.data.vote.userId));
 
+    });
+  });
+
+  describe('asyncDownVoteDetailThread', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('Should dispatch correctly when downvoting detail thread', async () => {
+      const dispatch = vi.fn();
+      const getState = vi.fn().mockReturnValue({
+        profile: {
+          user: {
+            id: 'user-1',
+            name: 'test',
+            avatar: 'test'
+          }
+        }
+      });
+
+      const fakeResponse = {
+        data: {
+          vote: {
+            id: 'vote-1',
+            threadId: 'thread-1',
+            userId: 'user-1',
+            voteType: -1
+          }
+        }
+      };
+
+      vi.spyOn(api, 'downVoteThread').mockResolvedValue(fakeResponse);
+      await asyncDownVoteDetailThread(fakeResponse.data.vote.threadId, fakeResponse.data.vote.userId)(dispatch, getState);
+
+      expect(dispatch).toHaveBeenCalledOnce();
+      expect(dispatch).toHaveBeenCalledWith(downVoteDetailThreadActionCreator(fakeResponse.data.vote.threadId, fakeResponse.data.vote.userId));
     });
   });
 
