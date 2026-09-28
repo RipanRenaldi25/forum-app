@@ -64,6 +64,22 @@ function usersThreadReducer(state = initialState, action = {}) {
       }
     };
   }
+  case ActionType.upVoteComment:
+    return {
+      ...state,
+      userDetail: {
+        ...state.userDetail,
+        comments: state.userDetail.comments.map((comment) => {
+          if (comment.id === action.payload.commentId) {
+            return {
+              ...comment,
+              upVotesBy: [...comment.upVotesBy, action.payload.userId]
+            };
+          };
+          return comment;
+        })
+      }
+    };
   default:
     return state;
   }

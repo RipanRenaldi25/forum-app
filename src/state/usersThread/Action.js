@@ -5,6 +5,7 @@ import {
   getAllUsers,
   getUserDetailByThread,
   neutralVoteThread,
+  upVoteComment,
   upVoteThread,
 } from '../../utils/api';
 import ActionType from './ActionType';
@@ -155,6 +156,30 @@ export const asyncNeutralVoteDetailThread = (threadId) => async (dispatch, getSt
     await neutralVoteThread(threadId);
     dispatch(neutralVoteDetailThreadActionCreator(threadId, user.id));
   } catch (err) {
+    alert(err.message);
+  }
+};
+
+export const upVoteCommentActionCreator = (commentId, userId) => ({
+  type: ActionType.upVoteComment,
+  payload: {
+    commentId,
+    userId
+  }
+});
+
+export const asyncUpVoteComment = (commentId) => async (dispatch, getState) => {
+  const { profile } = getState();
+  if (!profile){
+    alert('You must be logged in to upvote this comment');
+    return;
+  }
+  const { users: { userDetail } } = getState();
+  const { user } = profile;
+  try {
+    await upVoteComment(userDetail.id, commentId);
+    dispatch(upVoteCommentActionCreator(commentId, user.id));
+  } catch (err){
     alert(err.message);
   }
 };

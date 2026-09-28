@@ -2,23 +2,20 @@ import { FaThumbsDown, FaThumbsUp } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import useInput from '../hooks/useInput';
-import { asyncAddCommentToThread, asyncDownVoteDetailThread, asyncNeutralVoteDetailThread, asyncUpVoteDetailThread } from '../state/usersThread/Action';
+import { asyncAddCommentToThread, asyncDownVoteDetailThread, asyncNeutralVoteDetailThread, asyncUpVoteComment, asyncUpVoteDetailThread } from '../state/usersThread/Action';
 import { getTotalVote, parseDate, removeTags } from '../utils/utils';
 import CommentInput from './CommentInput';
 import CommentList from './CommentList';
-import { asyncNeutralVoteThread, asyncUpVoteThread } from '../state/threads/Action';
 
 function Detail({ detail }) {
   const [commentValue, onChangeCommentValue, onClear] = useInput();
   const dispatch = useDispatch();
-  const { user, profile } = useSelector((states) => states);
-  if (!profile){
-    return;
-  }
-  const { user: userProfile } = profile;
-  const isAlreadyUpVoted = detail.upVotesBy?.includes(userProfile.id);
-  const isAlreadyDownVoted = detail.downVotesBy?.includes(userProfile.id);
-  console.log({ detail, isAlreadyUpVoted, profile: userProfile  });
+  const { user } = useSelector((states) => ({
+    user: states.profile?.user || null,
+  }));
+  const isAlreadyUpVoted = detail.upVotesBy?.includes(user?.id);
+  const isAlreadyDownVoted = detail.downVotesBy?.includes(user?.id);
+  console.log({ detail, isAlreadyUpVoted, profile: user  });
 
   if (detail.id === undefined) {
     return (
@@ -55,6 +52,10 @@ function Detail({ detail }) {
       asyncAddCommentToThread({ threadId: detail.id, content: commentValue }),
     );
     onClear();
+  };
+
+  const onUpVotesCommentHandler = (commentId) => {
+    dispatch(asyncUpVoteComment(commentId));
   };
 
   return (
@@ -107,7 +108,7 @@ function Detail({ detail }) {
       )}
       <div className='total-comment mt-8'>
         <h1 className='mb-3 text-lg font-semibold'>Komentar ({getTotalVote(detail.comments)})</h1>
-        <CommentList comments={detail.comments} />
+        <CommentList comments={detail.comments} onUpVoteComment={onUpVotesCommentHandler} />
       </div>
     </div>
   );
