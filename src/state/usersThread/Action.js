@@ -1,8 +1,12 @@
 // import { showLoading, hideLoading } from 'react-redux-loading-bar';
 import {
   createComment,
+  downVoteThread,
   getAllUsers,
   getUserDetailByThread,
+  neutralVoteThread,
+  upVoteComment,
+  upVoteThread,
 } from '../../utils/api';
 import ActionType from './ActionType';
 
@@ -39,6 +43,7 @@ export const asyncFetchDetailUserThread = (id) => async (dispatch) => {
     const {
       data: { detailThread },
     } = await getUserDetailByThread(id);
+    console.log({ detailThread });
     dispatch(fetchDetailUserThread(detailThread));
   } catch ({
     response: {
@@ -84,3 +89,97 @@ export const asyncAddCommentToThread =
         alert(message);
       }
     };
+
+
+export const upVoteDetailThreadActionCreator = (threadId, userId) => ({
+  type: ActionType.upVoteDetailThread,
+  payload: {
+    threadId,
+    userId
+  }
+});
+
+export const asyncUpVoteDetailThread = (threadId) => async (dispatch, getState) => {
+  const { profile } = getState();
+  if (!profile){
+    alert('You must be logged in to upvote this thread');
+    return;
+  }
+  const { user } = profile;
+  try {
+    await upVoteThread(threadId);
+    dispatch(upVoteDetailThreadActionCreator(threadId, user.id));
+  } catch (err){
+    alert(err.message);
+  }
+};
+
+export const downVoteDetailThreadActionCreator = (threadId, userId) => ({
+  type: ActionType.downVoteDetailThread,
+  payload: {
+    threadId,
+    userId
+  }
+});
+
+export const asyncDownVoteDetailThread = (threadId) => async (dispatch, getState) => {
+  const { profile } = getState();
+  if (!profile){
+    alert('You must be logged in to downvote this thread');
+    return;
+  }
+  const { user } = profile;
+  try {
+    await downVoteThread(threadId);
+    dispatch(downVoteDetailThreadActionCreator(threadId, user.id));
+  } catch (err) {
+    alert(err.message);
+  }
+};
+
+export const neutralVoteDetailThreadActionCreator = (threadId, userId) => ({
+  type: ActionType.neutralVoteDetailThread,
+  payload: {
+    threadId,
+    userId
+  }
+});
+
+export const asyncNeutralVoteDetailThread = (threadId) => async (dispatch, getState) => {
+  const { profile } = getState();
+  if (!profile){
+    alert('You must be logged in to neutral vote this thread');
+    return;
+  }
+  const { user } = profile;
+  try {
+    await neutralVoteThread(threadId);
+    dispatch(neutralVoteDetailThreadActionCreator(threadId, user.id));
+  } catch (err) {
+    alert(err.message);
+  }
+};
+
+export const upVoteCommentActionCreator = (commentId, userId) => ({
+  type: ActionType.upVoteComment,
+  payload: {
+    commentId,
+    userId
+  }
+});
+
+export const asyncUpVoteComment = (commentId) => async (dispatch, getState) => {
+  const { profile } = getState();
+  if (!profile){
+    alert('You must be logged in to upvote this comment');
+    return;
+  }
+  const { users: { userDetail } } = getState();
+  const { user } = profile;
+  try {
+    await upVoteComment(userDetail.id, commentId);
+    dispatch(upVoteCommentActionCreator(commentId, user.id));
+  } catch (err){
+    alert(err.message);
+  }
+};

@@ -13,7 +13,7 @@
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as api from '../../utils/api';
-import { addCommentToThreadActionCreator, asyncAddCommentToThread, asyncFetchAllUsers, asyncFetchDetailUserThread, fetchAllUsers, fetchDetailUserThread } from './Action';
+import { addCommentToThreadActionCreator, asyncAddCommentToThread, asyncDownVoteDetailThread, asyncFetchAllUsers, asyncFetchDetailUserThread, asyncNeutralVoteDetailThread, asyncUpVoteComment, asyncUpVoteDetailThread, downVoteDetailThreadActionCreator, fetchAllUsers, fetchDetailUserThread, neutralVoteDetailThreadActionCreator, upVoteCommentActionCreator, upVoteDetailThreadActionCreator } from './Action';
 
 describe('User Thread Thunk Action', () => {
   describe('Async fetch all users', () => {
@@ -157,6 +157,165 @@ describe('User Thread Thunk Action', () => {
       expect(dispatch).toHaveBeenCalledOnce();
 
       expect(dispatch).toHaveBeenCalledWith(addCommentToThreadActionCreator(fakeComment));
+    });
+  });
+
+  describe('asyncUpVoteDetailThread', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('Should dispatch correctly when upvoting detail thread', async () => {
+      const dispatch = vi.fn();
+      const getState = vi.fn().mockReturnValue({
+        profile: {
+          user: {
+            id: 'user-1',
+            name: 'test',
+            avatar: 'test'
+          }
+        }
+      });
+
+      const fakeResponse = {
+        data: {
+          vote: {
+            id: 'vote-1',
+            threadId: 'thread-1',
+            userId: 'user-1',
+            voteType: 1
+          }
+        }
+      };
+
+      vi.spyOn(api, 'upVoteThread').mockResolvedValue(fakeResponse);
+      await asyncUpVoteDetailThread(fakeResponse.data.vote.threadId, fakeResponse.data.vote.userId)(dispatch, getState);
+
+      expect(dispatch).toHaveBeenCalledOnce();
+      expect(dispatch).toHaveBeenCalledWith(upVoteDetailThreadActionCreator(fakeResponse.data.vote.threadId, fakeResponse.data.vote.userId));
+
+    });
+  });
+
+  describe('asyncDownVoteDetailThread', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('Should dispatch correctly when downvoting detail thread', async () => {
+      const dispatch = vi.fn();
+      const getState = vi.fn().mockReturnValue({
+        profile: {
+          user: {
+            id: 'user-1',
+            name: 'test',
+            avatar: 'test'
+          }
+        }
+      });
+
+      const fakeResponse = {
+        data: {
+          vote: {
+            id: 'vote-1',
+            threadId: 'thread-1',
+            userId: 'user-1',
+            voteType: -1
+          }
+        }
+      };
+
+      vi.spyOn(api, 'downVoteThread').mockResolvedValue(fakeResponse);
+      await asyncDownVoteDetailThread(fakeResponse.data.vote.threadId, fakeResponse.data.vote.userId)(dispatch, getState);
+
+      expect(dispatch).toHaveBeenCalledOnce();
+      expect(dispatch).toHaveBeenCalledWith(downVoteDetailThreadActionCreator(fakeResponse.data.vote.threadId, fakeResponse.data.vote.userId));
+    });
+  });
+
+  describe('asyncNeutralVoteDetailThread', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('Should dispatch correctly when neutral voting detail thread', async () => {
+      const dispatch = vi.fn();
+      const getState = vi.fn().mockReturnValue({
+        profile: {
+          user: {
+            id: 'user-1',
+            name: 'test',
+            avatar: 'test'
+          }
+        }
+      });
+
+      const fakeResponse = {
+        data: {
+          vote: {
+            id: 'vote-1',
+            threadId: 'thread-1',
+            userId: 'user-1',
+            voteType: 0
+          }
+        }
+      };
+
+      vi.spyOn(api, 'neutralVoteThread').mockResolvedValue(fakeResponse);
+      await asyncNeutralVoteDetailThread(fakeResponse.data.vote.threadId, fakeResponse.data.vote.userId)(dispatch, getState);
+
+      expect(dispatch).toHaveBeenCalledOnce();
+      expect(dispatch).toHaveBeenCalledWith(neutralVoteDetailThreadActionCreator(fakeResponse.data.vote.threadId, fakeResponse.data.vote.userId));
+    });
+  });
+
+  describe('asyncUpVoteComment', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('Should dispatch correctly when upvoting comment', async () => {
+      const dispatch = vi.fn();
+      const getState = vi.fn().mockReturnValue({
+        profile: {
+          user: {
+            id: 'user-1',
+            name: 'test',
+            avatar: 'test'
+          }
+        },
+        users: {
+          userDetail: {
+            id: 'thread-1',
+            title: 'Contoh Thread',
+            body: 'Contoh Body',
+            category: 'Contoh Category',
+            createdAt: new Date().toISOString(),
+            ownerId: 'user-1',
+            upVotesBy: [],
+            downVotesBy: [],
+          }
+        }
+      });
+
+      const mockThreadId = 'thread-1';
+
+      const fakeResponse = {
+        data: {
+          vote: {
+            id: 'vote-1',
+            commentId: 'comment-1',
+            userId: 'user-1',
+            voteType: 1
+          }
+        }
+      };
+
+      vi.spyOn(api, 'upVoteComment').mockResolvedValue(fakeResponse);
+      await asyncUpVoteComment(fakeResponse.data.vote.commentId)(dispatch, getState);
+
+      expect(dispatch).toHaveBeenCalledOnce();
+      expect(dispatch).toHaveBeenCalledWith(upVoteCommentActionCreator(fakeResponse.data.vote.commentId, fakeResponse.data.vote.userId));
     });
   });
 
