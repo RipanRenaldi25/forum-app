@@ -2,13 +2,12 @@ import { FaThumbsDown, FaThumbsUp } from 'react-icons/fa';
 import { getTotalVote, parseDate, removeTags } from '../utils/utils';
 import { useSelector } from 'react-redux';
 
-function CommentItem({ content, createdAt, upVotesBy, downVotesBy, owner, onUpVoteComment, id, }) {
+function CommentItem({ content, createdAt, upVotesBy, downVotesBy, owner, onUpVoteComment, onDownVoteComment, id, }) {
   const profile = useSelector((states) => states.profile);
   const { user } = profile || {};
   const isAlreadyUpVoted = upVotesBy.includes(user?.id);
   const isAlreadyDownVoted = downVotesBy.includes(user?.id);
 
-  console.log({ user, isAlreadyUpVoted, isAlreadyDownVoted, upVotesBy, downVotesBy });
   return (
     <div data-testid="comment-item" className='mb-2 rounded-2xl border border-white/10 bg-white/[0.04] p-4'>
       <div className='mb-3 flex items-center justify-between'>
@@ -31,7 +30,7 @@ function CommentItem({ content, createdAt, upVotesBy, downVotesBy, owner, onUpVo
           <span className='ml-1'>{getTotalVote(upVotesBy)}</span>
         </div>
         <div className='flex items-center'>
-          <button type='button' className="cursor-pointer" onClick={() => onUpVoteComment(id)}>
+          <button type='button' className="cursor-pointer" onClick={() => onDownVoteComment(id)}>
             <FaThumbsDown className={isAlreadyDownVoted ? 'text-red-400' : 'text-slate-400'} />
           </button>
           <span className='ml-1'>{getTotalVote(downVotesBy)}</span>

@@ -65,6 +65,12 @@ function usersThreadReducer(state = initialState, action = {}) {
     };
   }
   case ActionType.upVoteComment:
+  {
+    const isAlreadyUpVoted = state.userDetail.comments.find((comment) => comment.id === action.payload.commentId)?.upVotesBy.includes(action.payload.userId);
+    if (isAlreadyUpVoted) {
+      return state;
+    }
+    const isAlreadyDownVoted = state.userDetail.comments.find((comment) => comment.id === action.payload.commentId)?.downVotesBy.includes(action.payload.userId);
     return {
       ...state,
       userDetail: {
@@ -73,13 +79,34 @@ function usersThreadReducer(state = initialState, action = {}) {
           if (comment.id === action.payload.commentId) {
             return {
               ...comment,
-              upVotesBy: [...comment.upVotesBy, action.payload.userId]
+              upVotesBy: [...comment.upVotesBy, action.payload.userId],
+              downVotesBy: isAlreadyDownVoted ? comment.downVotesBy.filter((userId) => userId !== action.payload.userId) : comment.downVotesBy
             };
           };
           return comment;
         })
       }
     };
+  }
+  case ActionType.downVoteComment:
+  {
+    const isAlreadyDownVoted = state.userDetail.comments.find((comment) => comment.id === action.payload.commentId)?.downVotesBy.includes(action.payload.userId);
+    if (isAlreadyDownVoted) {
+      return state;
+    }
+    const isAlreadyUpVoted = state.userDetail.comments.find((comment) => comment.id === action.payload.commentId)?.upVotesBy.includes(action.payload.userId);
+    return {
+      ...state,
+      userDetail: {
+        ...state.userDetail,
+        comments: state.userDetail.comments.map((comment) => comment.id === action.payload.commentId ? {
+          ...comment,
+          downVotesBy:  [...comment.downVotesBy, action.payload.userId],
+          upVotesBy: isAlreadyUpVoted ? comment.upVotesBy.filter((userId) => userId !== action.payload.userId) : comment.upVotesBy
+        } : comment)
+      }
+    };
+  }
   default:
     return state;
   }

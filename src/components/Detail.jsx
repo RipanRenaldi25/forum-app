@@ -2,7 +2,7 @@ import { FaThumbsDown, FaThumbsUp } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import useInput from '../hooks/useInput';
-import { asyncAddCommentToThread, asyncDownVoteDetailThread, asyncNeutralVoteDetailThread, asyncUpVoteComment, asyncUpVoteDetailThread } from '../state/usersThread/Action';
+import { asyncAddCommentToThread, asyncDownVoteComment, asyncDownVoteDetailThread, asyncNeutralVoteDetailThread, asyncUpVoteComment, asyncUpVoteDetailThread } from '../state/usersThread/Action';
 import { getTotalVote, parseDate, removeTags } from '../utils/utils';
 import CommentInput from './CommentInput';
 import CommentList from './CommentList';
@@ -58,6 +58,10 @@ function Detail({ detail }) {
     dispatch(asyncUpVoteComment(commentId));
   };
 
+  const onDownVotesCommentHandler = (commentId) => {
+    dispatch(asyncDownVoteComment(commentId));
+  };
+
   return (
     <div>
       <div className='inline-flex rounded-full border border-cyan-300/30 bg-cyan-400/10 px-3 py-1 text-xs font-medium text-cyan-200'>
@@ -108,7 +112,7 @@ function Detail({ detail }) {
       )}
       <div className='total-comment mt-8'>
         <h1 className='mb-3 text-lg font-semibold'>Komentar ({getTotalVote(detail.comments)})</h1>
-        <CommentList comments={detail.comments} onUpVoteComment={onUpVotesCommentHandler} />
+        <CommentList comments={detail.comments} onUpVoteComment={onUpVotesCommentHandler} onDownVoteComment={onDownVotesCommentHandler} />
       </div>
     </div>
   );
