@@ -1,9 +1,11 @@
 // import { showLoading, hideLoading } from 'react-redux-loading-bar';
 import {
   createComment,
+  downVoteComment,
   downVoteThread,
   getAllUsers,
   getUserDetailByThread,
+  neutralVoteComment,
   neutralVoteThread,
   upVoteComment,
   upVoteThread,
@@ -181,5 +183,63 @@ export const asyncUpVoteComment = (commentId) => async (dispatch, getState) => {
     dispatch(upVoteCommentActionCreator(commentId, user.id));
   } catch (err){
     alert(err.message);
+  }
+};
+
+export const downVoteCommentActionCreator = (commentId, userId) => ({
+  type: ActionType.downVoteComment,
+  payload: {
+    commentId,
+    userId
+  }
+});
+
+export const asyncDownVoteComment = (commentId) => async (dispatch, getState) => {
+  const { profile } = getState();
+  if (!profile){
+    alert('You must be logged in to downvote this comment');
+    return;
+  }
+  const { user } = profile;
+  const { users: { userDetail } } = getState();
+  if (!userDetail || !userDetail.id){
+    alert('No thread selected');
+    return;
+  }
+  try {
+    await downVoteComment(userDetail.id, commentId);
+    dispatch(downVoteCommentActionCreator(commentId, user.id));
+  } catch (err) {
+    const errMessage = err.response?.data?.message || err.message || 'An error occurred while downvoting the comment.';
+    alert(errMessage);
+  }
+};
+
+export const neutralVoteCommentActionCreator = (commentId, userId) => ({
+  type: ActionType.neutralVoteComment,
+  payload: {
+    commentId,
+    userId
+  }
+});
+
+export const asyncNeutralVoteComment = (commentId) => async (dispatch, getState) => {
+  const { profile } = getState();
+  if (!profile){
+    alert('You must be logged in to neutral vote this comment');
+    return;
+  }
+  const { user } = profile;
+  const { users: { userDetail } } = getState();
+  if (!userDetail || !userDetail.id){
+    alert('No thread selected');
+    return;
+  }
+  try {
+    await neutralVoteComment(userDetail.id, commentId);
+    dispatch(neutralVoteCommentActionCreator(commentId, user.id));
+  } catch (err) {
+    const errMessage = err.response?.data?.message || err.message || 'An error occurred while neutral voting the comment.';
+    alert(errMessage);
   }
 };

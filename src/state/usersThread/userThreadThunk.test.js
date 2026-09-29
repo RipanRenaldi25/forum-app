@@ -13,7 +13,7 @@
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as api from '../../utils/api';
-import { addCommentToThreadActionCreator, asyncAddCommentToThread, asyncDownVoteDetailThread, asyncFetchAllUsers, asyncFetchDetailUserThread, asyncNeutralVoteDetailThread, asyncUpVoteComment, asyncUpVoteDetailThread, downVoteDetailThreadActionCreator, fetchAllUsers, fetchDetailUserThread, neutralVoteDetailThreadActionCreator, upVoteCommentActionCreator, upVoteDetailThreadActionCreator } from './Action';
+import { addCommentToThreadActionCreator, asyncAddCommentToThread, asyncDownVoteComment, asyncDownVoteDetailThread, asyncFetchAllUsers, asyncFetchDetailUserThread, asyncNeutralVoteComment, asyncNeutralVoteDetailThread, asyncUpVoteComment, asyncUpVoteDetailThread, downVoteCommentActionCreator, downVoteDetailThreadActionCreator, fetchAllUsers, fetchDetailUserThread, neutralVoteCommentActionCreator, neutralVoteDetailThreadActionCreator, upVoteCommentActionCreator, upVoteDetailThreadActionCreator } from './Action';
 
 describe('User Thread Thunk Action', () => {
   describe('Async fetch all users', () => {
@@ -298,8 +298,6 @@ describe('User Thread Thunk Action', () => {
         }
       });
 
-      const mockThreadId = 'thread-1';
-
       const fakeResponse = {
         data: {
           vote: {
@@ -319,4 +317,175 @@ describe('User Thread Thunk Action', () => {
     });
   });
 
+  describe('asyncDownVoteComment', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('Should dispatch correctly when downvoting cmoment', async () => {
+      const dispatch = vi.fn();
+      const getState = vi.fn().mockReturnValue({
+        profile: {
+          user: {
+            id: 'user-1',
+            name: 'test',
+            avatar: 'test'
+          }
+        },
+        users: {
+          userDetail: {
+            id: 'thread-1',
+            title: 'Contoh Thread',
+            body: 'Contoh Body',
+            category: 'Contoh Category',
+            createdAt: new Date().toISOString(),
+            ownerId: 'user-1',
+            upVotesBy: [],
+            downVotesBy: [],
+          }
+        }
+      });
+
+      const fakeResponse = {
+        data: {
+          vote: {
+            id: 'vote-1',
+            commentId: 'comment-1',
+            userId: 'user-1',
+            voteType: -1
+          }
+        }
+      };
+
+      vi.spyOn(api, 'downVoteComment').mockResolvedValue(fakeResponse);
+      await asyncDownVoteComment(fakeResponse.data.vote.commentId)(dispatch, getState);
+
+      expect(dispatch).toHaveBeenCalledOnce();
+      expect(dispatch).toHaveBeenCalledWith(downVoteCommentActionCreator(fakeResponse.data.vote.commentId, fakeResponse.data.vote.userId));
+    });
+
+    it('Should call alert when downvoting comment is failed', async () => {
+      window.alert = vi.fn();
+      const fakeResponse = {
+        response: {
+          data: {
+            message: 'Downvote failed'
+          }
+        }
+      };
+
+      vi.spyOn(api, 'downVoteComment').mockRejectedValue(fakeResponse);
+
+      await asyncDownVoteComment('comment-1')({}, () => ({
+        profile: {
+          user: {
+            id: 'user-1',
+            name: 'test',
+            avatar: 'test'
+          }
+        },
+        users: {
+          userDetail: {
+            id: 'thread-1',
+            title: 'Contoh Thread',
+            body: 'Contoh Body',
+            category: 'Contoh Category',
+            createdAt: new Date().toISOString(),
+            ownerId: 'user-1',
+            upVotesBy: [],
+            downVotesBy: [],
+          }
+        }
+      }));
+
+      expect(window.alert).toHaveBeenCalledOnce();
+      expect(window.alert).toHaveBeenCalledWith(fakeResponse.response.data.message);
+    });
+  });
+
+  describe('asyncNeutralVoteComment', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('Should dispatch correctly when neutral voting comment', async () => {
+      const dispatch = vi.fn();
+      const getState = vi.fn().mockReturnValue({
+        profile: {
+          user: {
+            id: 'user-1',
+            name: 'test',
+            avatar: 'test'
+          }
+        },
+        users: {
+          userDetail: {
+            id: 'thread-1',
+            title: 'Contoh Thread',
+            body: 'Contoh Body',
+            category: 'Contoh Category',
+            createdAt: new Date().toISOString(),
+            ownerId: 'user-1',
+            upVotesBy: ['user-1'],
+            downVotesBy: [],
+          }
+        }
+      });
+      const fakeResponse = {
+        data: {
+          vote: {
+            id: 'vote-1',
+            commentId: 'comment-1',
+            userId: 'user-1',
+            voteType: 0
+          }
+        }
+      };
+
+      vi.spyOn(api, 'neutralVoteComment').mockResolvedValue(fakeResponse);
+      await asyncNeutralVoteComment(fakeResponse.data.vote.commentId)(dispatch, getState);
+
+      expect(dispatch).toHaveBeenCalledOnce();
+      expect(dispatch).toHaveBeenCalledWith(neutralVoteCommentActionCreator(fakeResponse.data.vote.commentId, fakeResponse.data.vote.userId));
+    });
+
+    it('Should call alert when neutral voting comment is failed', async () => {
+      window.alert = vi.fn();
+      const fakeResponse = {
+        response: {
+          data: {
+            message: 'Neutral vote failed'
+          }
+        }
+      };
+
+      vi.spyOn(api, 'neutralVoteComment').mockRejectedValue(fakeResponse);
+
+      await asyncNeutralVoteComment('comment-1')({}, () => ({
+        profile: {
+          user: {
+            id: 'user-1',
+            name: 'test',
+            avatar: 'test'
+          }
+        },
+        users: {
+          userDetail: {
+            id: 'thread-1',
+            title: 'Contoh Thread',
+            body: 'Contoh Body',
+            category: 'Contoh Category',
+            createdAt: new Date().toISOString(),
+            ownerId: 'user-1',
+            upVotesBy: ['user-1'],
+            downVotesBy: [],
+          }
+        }
+      }));
+
+      expect(window.alert).toHaveBeenCalledOnce();
+      expect(window.alert).toHaveBeenCalledWith(fakeResponse.response.data.message);
+    });
+
+  });
 });
