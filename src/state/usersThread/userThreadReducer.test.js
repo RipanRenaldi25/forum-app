@@ -7,7 +7,7 @@
 
 import { describe, expect, it } from 'vitest';
 import usersThreadReducer from './usersThreadReducer';
-import { addCommentToThreadActionCreator, downVoteCommentActionCreator, downVoteDetailThreadActionCreator, fetchAllUsers, fetchDetailUserThread, neutralVoteCommentActionCreator, neutralVoteDetailThreadActionCreator, upVoteCommentActionCreator } from './Action';
+import { addCommentToThreadActionCreator, downVoteCommentActionCreator, downVoteDetailThreadActionCreator, fetchAllUsers, fetchDetailUserThread, neutralVoteCommentActionCreator, neutralVoteDetailThreadActionCreator, upVoteCommentActionCreator, upVoteDetailThreadActionCreator } from './Action';
 
 describe('User Thread Reducer', () => {
   it('Should return initial state when given unknown action', () => {
@@ -124,6 +124,62 @@ describe('User Thread Reducer', () => {
       userDetail: {
         ...initialState.userDetail,
         upVotesBy: [...initialState.userDetail.upVotesBy, 'user-1']
+      }
+    });
+  });
+
+  it('Should remove downvote detail thread when given by upvote detail thread action creator', () => {
+    const initialState = {
+      users: null,
+      userDetail: {
+        id: 'thread-1',
+        title: 'Contoh Thread',
+        body: 'Contoh Body',
+        category: 'Contoh Category',
+        createdAt: new Date().toISOString(),
+        ownerId: 'user-1',
+        upVotesBy: [],
+        downVotesBy: ['user-1'],
+      }
+    };
+    const nextState = usersThreadReducer(initialState, upVoteDetailThreadActionCreator('thread-1', 'user-1'));
+
+    const isAlreadyDownVoted = initialState.userDetail.downVotesBy.includes('user-1');
+
+    expect(nextState).toEqual({
+      ...initialState,
+      userDetail: {
+        ...initialState.userDetail,
+        upVotesBy: [...initialState.userDetail.upVotesBy, 'user-1'],
+        downVotesBy: isAlreadyDownVoted ? initialState.userDetail.downVotesBy.filter((userId) => userId !== 'user-1') : initialState.userDetail.downVotesBy
+      }
+    });
+  });
+
+  it('Should remove upvote detail thread when given by downvote detail thread action creator', () => {
+    const initialState = {
+      users: null,
+      userDetail: {
+        id: 'thread-1',
+        title: 'Contoh Thread',
+        body: 'Contoh Body',
+        category: 'Contoh Category',
+        createdAt: new Date().toISOString(),
+        ownerId: 'user-1',
+        upVotesBy: ['user-1'],
+        downVotesBy: [],
+      }
+    };
+    const nextState = usersThreadReducer(initialState, downVoteDetailThreadActionCreator('thread-1', 'user-1'));
+
+    const isAlreadyUpVoted = initialState.userDetail.upVotesBy.includes('user-1');
+
+    expect(nextState).toEqual({
+      ...initialState,
+      userDetail: {
+        ...initialState.userDetail,
+        downVotesBy: [...initialState.userDetail.downVotesBy, 'user-1'],
+        upVotesBy: isAlreadyUpVoted ? initialState.userDetail.upVotesBy.filter((userId) => userId !== 'user-1') : initialState.userDetail.upVotesBy
       }
     });
   });

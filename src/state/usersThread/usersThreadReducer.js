@@ -33,23 +33,30 @@ function usersThreadReducer(state = initialState, action = {}) {
     };
   case ActionType.upVoteDetailThread:
     if (state.userDetail.id === action.payload.threadId) {
+      const isAlreadyDownVoted = state.userDetail.downVotesBy.includes(action.payload.userId);
       return {
         ...state,
         userDetail: {
           ...state.userDetail,
           upVotesBy: [...state.userDetail.upVotesBy, action.payload.userId],
+          downVotesBy: isAlreadyDownVoted ? state.userDetail.downVotesBy.filter((userId) => userId !== action.payload.userId) : state.userDetail.downVotesBy
         },
       };
     }
     return state;
   case ActionType.downVoteDetailThread:
+  {
+    const isAlreadyUpVoted = state.userDetail.upVotesBy.includes(action.payload.userId);
+
     return {
       ...state,
       userDetail: {
         ...state.userDetail,
-        downVotesBy: [...state.userDetail.downVotesBy, action.payload.userId]
+        downVotesBy: [...state.userDetail.downVotesBy, action.payload.userId],
+        upVotesBy: isAlreadyUpVoted ? state.userDetail.upVotesBy.filter((userId) => userId !== action.payload.userId) : state.userDetail.upVotesBy
       }
     };
+  }
   case ActionType.neutralVoteDetailThread:
   {
     const isUpVoted = state.userDetail.upVotesBy.includes(action.payload.userId);
