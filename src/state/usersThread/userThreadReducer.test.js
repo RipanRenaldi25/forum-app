@@ -7,7 +7,7 @@
 
 import { describe, expect, it } from 'vitest';
 import usersThreadReducer from './usersThreadReducer';
-import { addCommentToThreadActionCreator, downVoteCommentActionCreator, downVoteDetailThreadActionCreator, fetchAllUsers, fetchDetailUserThread, neutralVoteDetailThreadActionCreator, upVoteCommentActionCreator } from './Action';
+import { addCommentToThreadActionCreator, downVoteCommentActionCreator, downVoteDetailThreadActionCreator, fetchAllUsers, fetchDetailUserThread, neutralVoteCommentActionCreator, neutralVoteDetailThreadActionCreator, upVoteCommentActionCreator } from './Action';
 
 describe('User Thread Reducer', () => {
   it('Should return initial state when given unknown action', () => {
@@ -269,6 +269,74 @@ describe('User Thread Reducer', () => {
         comments: initialState.userDetail.comments.map((comment) => comment.id === 'comment-1' ? {
           ...comment,
           downVotesBy: [...comment.downVotesBy, 'user-1']
+        } : comment)
+      }
+    });
+  });
+
+  it('Should neutral up vote comment when given by NEUTRAL_VOTE_COMMENT action type', () => {
+    const initialState = {
+      users: null,
+      userDetail: {
+        id: 'user-1',
+        name: 'test',
+        avatar: 'test',
+        comments: [
+          {
+            id: 'comment-1',
+            content: 'Contoh Comment',
+            createdAt: new Date().toISOString(),
+            owner: 'user-1',
+            upVotesBy: ['user-1'],
+            downVotesBy: [],
+          }
+        ]
+      }
+    };
+
+    const nextState = usersThreadReducer(initialState,  neutralVoteCommentActionCreator('comment-1', 'user-1'));
+
+    expect(nextState).toEqual({
+      ...initialState,
+      userDetail: {
+        ...initialState.userDetail,
+        comments: initialState.userDetail.comments.map((comment) => comment.id === 'comment-1' ? {
+          ...comment,
+          upVotesBy: comment.upVotesBy.filter((userId) => userId !== 'user-1')
+        } : comment)
+      }
+    });
+  });
+
+  it('Should neutral downvote comment when given by NEUTRAL_VOTE_COMMENT action type', () => {
+    const initialState = {
+      users: null,
+      userDetail: {
+        id: 'user-1',
+        name: 'test',
+        avatar: 'test',
+        comments: [
+          {
+            id: 'comment-1',
+            content: 'Contoh Comment',
+            createdAt: new Date().toISOString(),
+            owner: 'user-1',
+            upVotesBy: [],
+            downVotesBy: ['user-1'],
+          }
+        ]
+      }
+    };
+
+    const nextState = usersThreadReducer(initialState, neutralVoteCommentActionCreator('comment-1', 'user-1'));
+
+    expect(nextState).toEqual({
+      ...initialState,
+      userDetail: {
+        ...initialState.userDetail,
+        comments: initialState.userDetail.comments.map((comment) => comment.id === 'comment-1' ? {
+          ...comment,
+          downVotesBy: comment.downVotesBy.filter((userId) => userId !== 'user-1')
         } : comment)
       }
     });

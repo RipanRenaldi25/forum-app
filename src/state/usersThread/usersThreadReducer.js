@@ -107,6 +107,26 @@ function usersThreadReducer(state = initialState, action = {}) {
       }
     };
   }
+  case ActionType.neutralVoteComment:
+  {
+    const isAlreadyUpVoted = state.userDetail.comments.find((comment) => comment.id === action.payload.commentId)?.upVotesBy.includes(action.payload.userId);
+    const isAlreadyDownVoted = state.userDetail.comments.find((comment) => comment.id === action.payload.commentId)?.downVotesBy.includes(action.payload.userId);
+    if (!isAlreadyUpVoted && !isAlreadyDownVoted){
+      return state;
+    }
+
+    return {
+      ...state,
+      userDetail: {
+        ...state.userDetail,
+        comments: state.userDetail.comments.map((comment) => comment.id === action.payload.commentId ? {
+          ...comment,
+          upVotesBy: isAlreadyUpVoted ? comment.upVotesBy.filter((userId) => userId !== action.payload.userId) : comment.upVotesBy,
+          downVotesBy: isAlreadyDownVoted ? comment.downVotesBy.filter((userId) => userId !== action.payload.userId) : comment.downVotesBy
+        } : comment)
+      }
+    };
+  }
   default:
     return state;
   }

@@ -1,6 +1,6 @@
 import CommentItem from './CommentItem';
 
-function CommentList({ comments, onUpVoteComment, onDownVoteComment }) {
+function CommentList({ comments, onUpVoteComment, onDownVoteComment, onNeutralVoteComment }) {
   if (comments.length === 0) {
     return (
       <p className='rounded-2xl border border-dashed border-white/15 px-4 py-6 text-sm text-slate-400'>
@@ -22,6 +22,7 @@ function CommentList({ comments, onUpVoteComment, onDownVoteComment }) {
             owner={comment.owner}
             onUpVoteComment={onUpVoteComment}
             onDownVoteComment={onDownVoteComment}
+            onNeutralVoteComment={onNeutralVoteComment}
             id={comment.id}
           />
         ))}
