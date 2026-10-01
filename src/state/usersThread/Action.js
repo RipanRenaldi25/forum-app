@@ -178,11 +178,22 @@ export const asyncUpVoteComment = (commentId) => async (dispatch, getState) => {
   }
   const { users: { userDetail } } = getState();
   const { user } = profile;
+  const isAlreadyUpVoted = userDetail.comments.find((comment) => comment.id === commentId)?.upVotesBy.includes(user.id);
+  if (isAlreadyUpVoted) {
+    return;
+  }
+  const isAlreadyDownVoted = userDetail.comments.find((comment) => comment.id === commentId)?.downVotesBy.includes(user.id);
+  dispatch(upVoteCommentActionCreator(commentId, user.id));
   try {
     await upVoteComment(userDetail.id, commentId);
-    dispatch(upVoteCommentActionCreator(commentId, user.id));
   } catch (err){
-    alert(err.message);
+    if (isAlreadyDownVoted) {
+      dispatch(downVoteCommentActionCreator(commentId, user.id));
+    } else {
+      dispatch(neutralVoteCommentActionCreator(commentId, user.id));
+    }
+    const errMessage = err.response?.data?.message || err.message || 'An error occurred while upvoting the comment.';
+    alert(errMessage);
   }
 };
 
