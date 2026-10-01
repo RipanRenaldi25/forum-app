@@ -294,6 +294,16 @@ describe('User Thread Thunk Action', () => {
             ownerId: 'user-1',
             upVotesBy: [],
             downVotesBy: [],
+            comments: [
+              {
+                id: 'comment-1',
+                content: 'Contoh Comment',
+                createdAt: new Date().toISOString(),
+                ownerId: 'user-1',
+                upVotesBy: [],
+                downVotesBy: [],
+              }
+            ]
           }
         }
       });
@@ -314,6 +324,156 @@ describe('User Thread Thunk Action', () => {
 
       expect(dispatch).toHaveBeenCalledOnce();
       expect(dispatch).toHaveBeenCalledWith(upVoteCommentActionCreator(fakeResponse.data.vote.commentId, fakeResponse.data.vote.userId));
+    });
+
+    it('Should call alert when upvoting comment is failed', async () => {
+      window.alert = vi.fn();
+      const dispatch = vi.fn();
+      const fakeResponse = {
+        response: {
+          data: {
+            message: 'Upvote failed'
+          }
+        }
+      };
+
+      vi.spyOn(api, 'upVoteComment').mockRejectedValue(fakeResponse);
+
+      await asyncUpVoteComment('comment-1')(dispatch, () => ({
+        profile: {
+          user: {
+            id: 'user-1',
+            name: 'test',
+            avatar: 'test'
+          }
+        },
+        users: {
+          userDetail: {
+            id: 'thread-1',
+            title: 'Contoh Thread',
+            body: 'Contoh Body',
+            category: 'Contoh Category',
+            createdAt: new Date().toISOString(),
+            ownerId: 'user-1',
+            upVotesBy: [],
+            downVotesBy: [],
+            comments: [
+              {
+                id: 'comment-1',
+                content: 'Contoh Comment',
+                createdAt: new Date().toISOString(),
+                ownerId: 'user-1',
+                upVotesBy: [],
+                downVotesBy: [],
+              }
+            ]
+          }
+        }
+      }));
+
+      expect(window.alert).toHaveBeenCalledOnce();
+      expect(window.alert).toHaveBeenCalledWith(fakeResponse.response.data.message);
+    });
+
+    it('Should revert to neutral vote if upvoting comment is failed and user has not voted', async () => {
+      const dispatch = vi.fn();
+      const getState = vi.fn().mockReturnValue({
+        profile: {
+          user: {
+            id: 'user-1',
+            name: 'test',
+            avatar: 'test'
+          }
+        },
+        users: {
+          userDetail: {
+            id: 'thread-1',
+            title: 'Contoh Thread',
+            body: 'Contoh Body',
+            category: 'Contoh Category',
+            createdAt: new Date().toISOString(),
+            ownerId: 'user-1',
+            upVotesBy: [],
+            downVotesBy: [],
+            comments: [
+              {
+                id: 'comment-1',
+                content: 'Contoh Comment',
+                createdAt: new Date().toISOString(),
+                ownerId: 'user-1',
+                upVotesBy: [],
+                downVotesBy: [],
+              }
+            ]
+          }
+        }
+      });
+
+      const fakeResponse = {
+        response: {
+          data: {
+            message: 'Upvote failed'
+          }
+        }
+      };
+
+      vi.spyOn(api, 'upVoteComment').mockRejectedValue(fakeResponse);
+
+      await asyncUpVoteComment('comment-1')(dispatch, getState);
+
+      expect(dispatch).toHaveBeenCalledTimes(2);
+      expect(dispatch).toHaveBeenCalledWith(upVoteCommentActionCreator('comment-1', 'user-1'));
+      expect(dispatch).toHaveBeenCalledWith(neutralVoteCommentActionCreator('comment-1', 'user-1'));
+    });
+
+    it('Should revert to downvote if upvoting comment is failed and user hasdownvoted', async () => {
+      const dispatch = vi.fn();
+      const getState = vi.fn().mockReturnValue({
+        profile: {
+          user: {
+            id: 'user-1',
+            name: 'test',
+            avatar: 'test'
+          }
+        },
+        users: {
+          userDetail: {
+            id: 'thread-1',
+            title: 'Contoh Thread',
+            body: 'Contoh Body',
+            category: 'Contoh Category',
+            createdAt: new Date().toISOString(),
+            ownerId: 'user-1',
+            upVotesBy: [],
+            downVotesBy: ['user-1'],
+            comments: [
+              {
+                id: 'comment-1',
+                content: 'Contoh Comment',
+                createdAt: new Date().toISOString(),
+                ownerId: 'user-1',
+                upVotesBy: [],
+                downVotesBy: ['user-1'],
+              }
+            ]
+          }
+        }
+      });
+
+      const fakeResponse = {
+        response: {
+          data: {
+            message: 'Upvote failed'
+          }
+        }
+      };
+
+      vi.spyOn(api, 'upVoteComment').mockRejectedValue(fakeResponse);
+      await asyncUpVoteComment('comment-1')(dispatch, getState);
+
+      expect(dispatch).toHaveBeenCalledTimes(2);
+      expect(dispatch).toHaveBeenCalledWith(upVoteCommentActionCreator('comment-1', 'user-1'));
+      expect(dispatch).toHaveBeenCalledWith(downVoteCommentActionCreator('comment-1', 'user-1'));
     });
   });
 
