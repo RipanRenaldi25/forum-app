@@ -257,10 +257,22 @@ export const asyncNeutralVoteComment = (commentId) => async (dispatch, getState)
     alert('No thread selected');
     return;
   }
+  const isAlreadyUpVoted = userDetail.comments.find((comment) => comment.id === commentId)?.upVotesBy.includes(user.id);
+  const isAlreadyDownVoted = userDetail.comments.find((comment) => comment.id === commentId)?.downVotesBy.includes(user.id);
+  if (!isAlreadyUpVoted && !isAlreadyDownVoted){
+    return;
+  }
+  dispatch(neutralVoteCommentActionCreator(commentId, user.id));
   try {
     await neutralVoteComment(userDetail.id, commentId);
-    dispatch(neutralVoteCommentActionCreator(commentId, user.id));
   } catch (err) {
+    if (isAlreadyUpVoted){
+      dispatch(upVoteCommentActionCreator(commentId, user.id));
+    } else if (isAlreadyDownVoted){
+      dispatch(downVoteCommentActionCreator(commentId, user.id));
+    } else {
+      dispatch(neutralVoteCommentActionCreator(commentId, user.id));
+    }
     const errMessage = err.response?.data?.message || err.message || 'An error occurred while neutral voting the comment.';
     alert(errMessage);
   }
