@@ -4,9 +4,8 @@ import Navigation from './Navigation';
 import Profile from './Profile';
 
 function Dashboard() {
-  const { profile, user } = useSelector((states) => states);
+  const { profile } = useSelector((states) => states);
   const [menuOpen, setMenuOpen] = useState(false);
-
 
   return (
     <aside className='relative z-20 w-full shrink-0 border-b border-white/10 bg-[#101826]/80 px-4 py-4 backdrop-blur-xl lg:w-72 lg:rounded-3xl lg:border lg:py-8'>
@@ -25,7 +24,7 @@ function Dashboard() {
           Menu
         </button>
       </div>
-      <div className={`${menuOpen ? 'block' : 'hidden'} lg:block`}>
+      <div className={`${menuOpen ? 'block' : 'hidden'} lg:block`} data-testid="dashboard-menu">
         <div className='flex flex-col items-center'>
           <Profile
             image={profile && profile.user.avatar}
