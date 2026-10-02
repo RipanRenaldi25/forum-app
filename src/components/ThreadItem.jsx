@@ -64,7 +64,7 @@ function ThreadItem({
               className={'cursor-pointer text-slate-400 hover:text-cyan-400 transition-colors'}
               onClick={isUpVoted ? handleNeutralVote : handleUpVote}
             >
-              <FaThumbsUp className={`${isUpVoted ? 'text-cyan-400' : ''}`}/>
+              <FaThumbsUp data-testid="upvote-button" className={`${isUpVoted ? 'text-cyan-400' : ''}`}/>
             </button>
             <span className='ml-1'>{getTotalVote(upVotesBy)}</span>
           </div>
@@ -74,7 +74,7 @@ function ThreadItem({
               className='cursor-pointer text-slate-400 hover:text-rose-400 transition-colors'
               onClick={isDownVoted ? handleNeutralVote: handleDownVote}
             >
-              <FaThumbsDown className={`${isDownVoted ? 'text-rose-400': ''} `}/>
+              <FaThumbsDown data-testid="downvote-button" className={`${isDownVoted ? 'text-rose-400': ''} `}/>
             </button>
             <span className='ml-1'>{getTotalVote(downVotesBy)}</span>
           </div>
