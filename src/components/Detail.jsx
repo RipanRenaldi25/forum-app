@@ -15,7 +15,6 @@ function Detail({ detail }) {
   }));
   const isAlreadyUpVoted = detail.upVotesBy?.includes(user?.id);
   const isAlreadyDownVoted = detail.downVotesBy?.includes(user?.id);
-  console.log({ detail, isAlreadyUpVoted, profile: user  });
 
   if (detail.id === undefined) {
     return (

@@ -9,6 +9,9 @@ import '@testing-library/jest-dom/vitest';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/react';
 import CommentItem from '../CommentItem';
+import { configureStore } from '@reduxjs/toolkit';
+import userProfileReducer from '../../state/userProfile/userProfileReducer';
+import { Provider } from 'react-redux';
 
 const dummyComment = {
   content: '<p>Ini adalah konten komentar dengan tag HTML</p>',
@@ -25,8 +28,9 @@ describe('CommentItem Component', () => {
   beforeEach(() => {
     cleanup();
   });
+
   it('Should Render Correctly', async () => {
-    render(<CommentItem {...dummyComment}/>);
+    render(<CommentItem comment={dummyComment} currentUserId={'user-1'} onDownVoteComment={() => {}} onNeutralVoteComment={() => {}} onUpVoteComment={() => {}}/>);
 
     const ownerName = screen.getByText(dummyComment.owner.name);
     const commentContent = screen.getByText('Ini adalah konten komentar dengan tag HTML');
@@ -37,7 +41,15 @@ describe('CommentItem Component', () => {
   });
 
   it('Should handle default fallback avatar if owner avatar is missing', async () => {
-    render(<CommentItem {...dummyComment} owner={{ ...dummyComment.owner, avatar: '' }}/>);
+    render(<CommentItem comment={{ ...dummyComment, owner: { ...dummyComment.owner, avatar: '' } }} currentUserId={'user-1'} onDownVoteComment={() => {}} onNeutralVoteComment={() => {}} onUpVoteComment={() => {}} />, { initialState: {
+      profile: {
+        user: {
+          id: 'user-1',
+          name: 'test',
+          avatar: ''
+        }
+      }
+    } });
 
     const avatar = await screen.getByAltText('avatar');
 
@@ -45,7 +57,7 @@ describe('CommentItem Component', () => {
   });
 
   it('Should render correct total vote counts', async () => {
-    render(<CommentItem {...dummyComment}/>);
+    render(<CommentItem comment={dummyComment} currentUserId={'user-1'} onDownVoteComment={() => {}} onNeutralVoteComment={() => {}} onUpVoteComment={() => {}}/>);
 
     const upVote = await screen.getByText('2');
     const downVote = await screen.getByText('1');
