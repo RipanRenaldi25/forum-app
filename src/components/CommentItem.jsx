@@ -1,7 +1,11 @@
 import { FaThumbsDown, FaThumbsUp } from 'react-icons/fa';
 import { getTotalVote, parseDate, removeTags } from '../utils/utils';
 
-function CommentItem({ content, createdAt, upVotesBy, downVotesBy, owner }) {
+function CommentItem({ comment, currentUserId,  onUpVoteComment, onDownVoteComment, onNeutralVoteComment }) {
+  const { content, createdAt, downVotesBy, upVotesBy, owner, id } = comment;
+  const isAlreadyUpVoted = upVotesBy.includes(currentUserId);
+  const isAlreadyDownVoted = downVotesBy.includes(currentUserId);
+
   return (
     <div data-testid="comment-item" className='mb-2 rounded-2xl border border-white/10 bg-white/[0.04] p-4'>
       <div className='mb-3 flex items-center justify-between'>
@@ -18,14 +22,14 @@ function CommentItem({ content, createdAt, upVotesBy, downVotesBy, owner }) {
       <p className='text-sm leading-6 text-slate-300'>{removeTags(content)}</p>
       <div className='mt-3 flex text-sm text-slate-400'>
         <div className='mr-4 flex items-center'>
-          <button type='button'>
-            <FaThumbsUp />
+          <button type='button' className="cursor-pointer" onClick={() => isAlreadyUpVoted ? onNeutralVoteComment(id) : onUpVoteComment(id)}>
+            <FaThumbsUp className={isAlreadyUpVoted ? 'text-cyan-400' : 'text-slate-400'} />
           </button>
           <span className='ml-1'>{getTotalVote(upVotesBy)}</span>
         </div>
         <div className='flex items-center'>
-          <button type='button'>
-            <FaThumbsDown />
+          <button type='button' className="cursor-pointer" onClick={() => isAlreadyDownVoted ? onNeutralVoteComment(id) : onDownVoteComment(id)}>
+            <FaThumbsDown className={isAlreadyDownVoted ? 'text-red-400' : 'text-slate-400'} />
           </button>
           <span className='ml-1'>{getTotalVote(downVotesBy)}</span>
         </div>

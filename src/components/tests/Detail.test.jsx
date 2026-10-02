@@ -5,20 +5,19 @@
  * Should show comment form when user is already login
  */
 
-import React from 'react';
 import '@testing-library/jest-dom/vitest';
 import { cleanup, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 import Detail from '../Detail';
 
-import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import userReducer from '../../state/users/userReducer';
+import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
+import userProfileReducer from '../../state/userProfile/userProfileReducer';
 
 const renderWithProvider = (Component, { initialState, store = configureStore({
   reducer: {
-    user: userReducer
+    profile: userProfileReducer
   },
   preloadedState: initialState
 }) }) => {
@@ -86,7 +85,7 @@ describe('Detail Component', () => {
   it('Should show loading when there is no detail', async () => {
     renderWithProvider(<Detail detail={{}} />, {
       initialState: {
-        users: null
+        profile: null
       }
     });
 
@@ -96,7 +95,7 @@ describe('Detail Component', () => {
   it('Should show detail thread correctly when there is detail props', async () => {
 
     renderWithProvider(<Detail detail={fakeComment}/>, { initialState: {
-      users: null
+      profile: null
     } });
 
     expect(screen.getByText(fakeComment.title)).toBeVisible();
@@ -108,7 +107,7 @@ describe('Detail Component', () => {
     renderWithProvider(
       <Detail detail={fakeComment}/>, {
         initialState: {
-          users: null
+          profile: null
         }
       }
     );
@@ -118,11 +117,13 @@ describe('Detail Component', () => {
   });
 
   it('Should show comment form when user is already login', async () => {
-    renderWithProvider(<Detail detail={fakeComment}/>, {
+    renderWithProvider(<Detail detail={fakeComment} />, {
       initialState: {
-        user: {
-          id: 'user-1',
-          name:'test'
+        profile: {
+          user: {
+            id: 'user-1',
+            name:'test'
+          }
         }
       }
     });

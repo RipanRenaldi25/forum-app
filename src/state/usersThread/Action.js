@@ -1,8 +1,14 @@
 // import { showLoading, hideLoading } from 'react-redux-loading-bar';
 import {
   createComment,
+  downVoteComment,
+  downVoteThread,
   getAllUsers,
   getUserDetailByThread,
+  neutralVoteComment,
+  neutralVoteThread,
+  upVoteComment,
+  upVoteThread,
 } from '../../utils/api';
 import ActionType from './ActionType';
 
@@ -39,6 +45,7 @@ export const asyncFetchDetailUserThread = (id) => async (dispatch) => {
     const {
       data: { detailThread },
     } = await getUserDetailByThread(id);
+    console.log({ detailThread });
     dispatch(fetchDetailUserThread(detailThread));
   } catch ({
     response: {
@@ -84,3 +91,189 @@ export const asyncAddCommentToThread =
         alert(message);
       }
     };
+
+
+export const upVoteDetailThreadActionCreator = (threadId, userId) => ({
+  type: ActionType.upVoteDetailThread,
+  payload: {
+    threadId,
+    userId
+  }
+});
+
+export const asyncUpVoteDetailThread = (threadId) => async (dispatch, getState) => {
+  const { profile } = getState();
+  if (!profile){
+    alert('You must be logged in to upvote this thread');
+    return;
+  }
+  const { user } = profile;
+  try {
+    await upVoteThread(threadId);
+    dispatch(upVoteDetailThreadActionCreator(threadId, user.id));
+  } catch (err){
+    alert(err.message);
+  }
+};
+
+export const downVoteDetailThreadActionCreator = (threadId, userId) => ({
+  type: ActionType.downVoteDetailThread,
+  payload: {
+    threadId,
+    userId
+  }
+});
+
+export const asyncDownVoteDetailThread = (threadId) => async (dispatch, getState) => {
+  const { profile } = getState();
+  if (!profile){
+    alert('You must be logged in to downvote this thread');
+    return;
+  }
+  const { user } = profile;
+  try {
+    await downVoteThread(threadId);
+    dispatch(downVoteDetailThreadActionCreator(threadId, user.id));
+  } catch (err) {
+    alert(err.message);
+  }
+};
+
+export const neutralVoteDetailThreadActionCreator = (threadId, userId) => ({
+  type: ActionType.neutralVoteDetailThread,
+  payload: {
+    threadId,
+    userId
+  }
+});
+
+export const asyncNeutralVoteDetailThread = (threadId) => async (dispatch, getState) => {
+  const { profile } = getState();
+  if (!profile){
+    alert('You must be logged in to neutral vote this thread');
+    return;
+  }
+  const { user } = profile;
+  try {
+    await neutralVoteThread(threadId);
+    dispatch(neutralVoteDetailThreadActionCreator(threadId, user.id));
+  } catch (err) {
+    alert(err.message);
+  }
+};
+
+export const upVoteCommentActionCreator = (commentId, userId) => ({
+  type: ActionType.upVoteComment,
+  payload: {
+    commentId,
+    userId
+  }
+});
+
+export const asyncUpVoteComment = (commentId) => async (dispatch, getState) => {
+  const { profile } = getState();
+  if (!profile){
+    alert('You must be logged in to upvote this comment');
+    return;
+  }
+  const { users: { userDetail } } = getState();
+  const { user } = profile;
+  const isAlreadyUpVoted = userDetail.comments.find((comment) => comment.id === commentId)?.upVotesBy.includes(user.id);
+  if (isAlreadyUpVoted) {
+    return;
+  }
+  const isAlreadyDownVoted = userDetail.comments.find((comment) => comment.id === commentId)?.downVotesBy.includes(user.id);
+  dispatch(upVoteCommentActionCreator(commentId, user.id));
+  try {
+    await upVoteComment(userDetail.id, commentId);
+  } catch (err){
+    if (isAlreadyDownVoted) {
+      dispatch(downVoteCommentActionCreator(commentId, user.id));
+    } else {
+      dispatch(neutralVoteCommentActionCreator(commentId, user.id));
+    }
+    const errMessage = err.response?.data?.message || err.message || 'An error occurred while upvoting the comment.';
+    alert(errMessage);
+  }
+};
+
+export const downVoteCommentActionCreator = (commentId, userId) => ({
+  type: ActionType.downVoteComment,
+  payload: {
+    commentId,
+    userId
+  }
+});
+
+export const asyncDownVoteComment = (commentId) => async (dispatch, getState) => {
+  const { profile } = getState();
+  if (!profile){
+    alert('You must be logged in to downvote this comment');
+    return;
+  }
+  const { user } = profile;
+  const { users: { userDetail } } = getState();
+  if (!userDetail || !userDetail.id){
+    alert('No thread selected');
+    return;
+  }
+  const isAlreadyDownVoted = userDetail.comments.find((comment) => comment.id === commentId)?.downVotesBy.includes(user.id);
+  if (isAlreadyDownVoted) {
+    return;
+  }
+  const isAlreadyUpVoted = userDetail.comments.find((comment) => comment.id === commentId)?.upVotesBy.includes(user.id);
+  dispatch(downVoteCommentActionCreator(commentId, user.id));
+
+  try {
+    await downVoteComment(userDetail.id, commentId);
+  } catch (err) {
+    if (isAlreadyUpVoted) {
+      dispatch(upVoteCommentActionCreator(commentId, user.id));
+    } else {
+      dispatch(neutralVoteCommentActionCreator(commentId, user.id));
+    }
+    const errMessage = err.response?.data?.message || err.message || 'An error occurred while downvoting the comment.';
+    alert(errMessage);
+  }
+};
+
+export const neutralVoteCommentActionCreator = (commentId, userId) => ({
+  type: ActionType.neutralVoteComment,
+  payload: {
+    commentId,
+    userId
+  }
+});
+
+export const asyncNeutralVoteComment = (commentId) => async (dispatch, getState) => {
+  const { profile } = getState();
+  if (!profile){
+    alert('You must be logged in to neutral vote this comment');
+    return;
+  }
+  const { user } = profile;
+  const { users: { userDetail } } = getState();
+  if (!userDetail || !userDetail.id){
+    alert('No thread selected');
+    return;
+  }
+  const isAlreadyUpVoted = userDetail.comments.find((comment) => comment.id === commentId)?.upVotesBy.includes(user.id);
+  const isAlreadyDownVoted = userDetail.comments.find((comment) => comment.id === commentId)?.downVotesBy.includes(user.id);
+  if (!isAlreadyUpVoted && !isAlreadyDownVoted){
+    return;
+  }
+  dispatch(neutralVoteCommentActionCreator(commentId, user.id));
+  try {
+    await neutralVoteComment(userDetail.id, commentId);
+  } catch (err) {
+    if (isAlreadyUpVoted){
+      dispatch(upVoteCommentActionCreator(commentId, user.id));
+    } else if (isAlreadyDownVoted){
+      dispatch(downVoteCommentActionCreator(commentId, user.id));
+    } else {
+      dispatch(neutralVoteCommentActionCreator(commentId, user.id));
+    }
+    const errMessage = err.response?.data?.message || err.message || 'An error occurred while neutral voting the comment.';
+    alert(errMessage);
+  }
+};

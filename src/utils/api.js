@@ -110,3 +110,32 @@ export const neutralVoteThread = async (threadId) =>{
   const data = await response.data;
   return data;
 };
+export const upVoteComment = async (threadId, commentId) => {
+  const response = await axios.post(`${import.meta.env.VITE_API_URL}/threads/${threadId}/comments/${commentId}/up-vote`, {}, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('AUTH_TOKEN')}`
+    }
+  });
+  const data = await response.data;
+  return data;
+};
+
+export const downVoteComment = async (threadId, commentId) => {
+  const response = await axios.post(`${import.meta.env.VITE_API_URL}/threads/${threadId}/comments/${commentId}/down-vote`, {}, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('AUTH_TOKEN')}`
+    }
+  });
+  const data = await response.data;
+  return data;
+};
+
+export const neutralVoteComment = async (threadId, commentId) => {
+  const response = await axios.post(`${import.meta.env.VITE_API_URL}/threads/${threadId}/comments/${commentId}/neutral-vote`, {}, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('AUTH_TOKEN')}`
+    }
+  });
+  const data = await response.data;
+  return data;
+};

@@ -2,7 +2,7 @@ import { FaThumbsDown, FaThumbsUp } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import useInput from '../hooks/useInput';
-import { asyncAddCommentToThread } from '../state/usersThread/Action';
+import { asyncAddCommentToThread, asyncDownVoteComment, asyncDownVoteDetailThread, asyncNeutralVoteComment, asyncNeutralVoteDetailThread, asyncUpVoteComment, asyncUpVoteDetailThread } from '../state/usersThread/Action';
 import { getTotalVote, parseDate, removeTags } from '../utils/utils';
 import CommentInput from './CommentInput';
 import CommentList from './CommentList';
@@ -10,7 +10,11 @@ import CommentList from './CommentList';
 function Detail({ detail }) {
   const [commentValue, onChangeCommentValue, onClear] = useInput();
   const dispatch = useDispatch();
-  const { user } = useSelector((states) => states);
+  const { user } = useSelector((states) => ({
+    user: states.profile?.user || null,
+  }));
+  const isAlreadyUpVoted = detail.upVotesBy?.includes(user?.id);
+  const isAlreadyDownVoted = detail.downVotesBy?.includes(user?.id);
 
   if (detail.id === undefined) {
     return (
@@ -20,12 +24,45 @@ function Detail({ detail }) {
     );
   }
 
+  const onUpVotesThreadHandler = () => {
+    if (isAlreadyUpVoted) {
+      return;
+    }
+    dispatch(asyncUpVoteDetailThread(detail.id));
+  };
+
+  const onDownVotesThreadHandler = () => {
+    if (isAlreadyDownVoted) {
+      return;
+    }
+    dispatch(asyncDownVoteDetailThread(detail.id));
+  };
+
+  const onNeutralVotesThreadHandler = () => {
+    if (!isAlreadyUpVoted && !isAlreadyDownVoted) {
+      return;
+    }
+    dispatch(asyncNeutralVoteDetailThread(detail.id));
+  };
+
   const onSubmitHandler = (e) => {
     e.preventDefault();
     dispatch(
       asyncAddCommentToThread({ threadId: detail.id, content: commentValue }),
     );
     onClear();
+  };
+
+  const onUpVotesCommentHandler = (commentId) => {
+    dispatch(asyncUpVoteComment(commentId));
+  };
+
+  const onDownVotesCommentHandler = (commentId) => {
+    dispatch(asyncDownVoteComment(commentId));
+  };
+
+  const onNeutralVotesCommentHandler = (commentId) => {
+    dispatch(asyncNeutralVoteComment(commentId));
   };
 
   return (
@@ -39,14 +76,14 @@ function Detail({ detail }) {
       </p>
       <div className='flex flex-wrap items-center gap-4 text-sm text-slate-300'>
         <div className='flex items-center'>
-          <button type='button'>
-            <FaThumbsUp />
+          <button type='button' className="cursor-pointer" onClick={isAlreadyUpVoted ? onNeutralVotesThreadHandler : onUpVotesThreadHandler }>
+            <FaThumbsUp className={isAlreadyUpVoted ? 'text-cyan-400' : 'text-slate-400'} />
           </button>
           <span className='ml-1'>{getTotalVote(detail.upVotesBy)}</span>
         </div>
         <div className='flex items-center'>
-          <button type='button'>
-            <FaThumbsDown />
+          <button type='button' className="cursor-pointer" onClick={isAlreadyDownVoted ? onNeutralVotesThreadHandler : onDownVotesThreadHandler }>
+            <FaThumbsDown className={isAlreadyDownVoted ? 'text-red-400' : 'text-slate-400'} />
           </button>
           <span className='ml-1'>{getTotalVote(detail.downVotesBy)}</span>
         </div>
@@ -78,7 +115,7 @@ function Detail({ detail }) {
       )}
       <div className='total-comment mt-8'>
         <h1 className='mb-3 text-lg font-semibold'>Komentar ({getTotalVote(detail.comments)})</h1>
-        <CommentList comments={detail.comments} />
+        <CommentList comments={detail.comments} onUpVoteComment={onUpVotesCommentHandler} onDownVoteComment={onDownVotesCommentHandler} onNeutralVoteComment={onNeutralVotesCommentHandler} />
       </div>
     </div>
   );
