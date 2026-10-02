@@ -22,7 +22,7 @@ function Loading() {
   }, [visible]);
 
   if (!visible) {
-    return <div className='sticky top-0 z-50 h-0' />;
+    return <div className='sticky top-0 z-50 h-1 invisible' />;
   }
 
   return (

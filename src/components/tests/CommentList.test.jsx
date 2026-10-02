@@ -9,6 +9,24 @@ import '@testing-library/jest-dom/vitest';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/react';
 import CommentList from '../CommentList';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import userProfileReducer from '../../state/userProfile/userProfileReducer';
+
+const renderWithProvider = (Component, { initialState, store=configureStore({
+  reducer: {
+    profile: userProfileReducer,
+  },
+  preloadedState: initialState
+}) }) => {
+  return (
+    render(
+      <Provider store={store}>
+        {Component}
+      </Provider>
+    )
+  );
+};
 
 
 describe('CommentList Component', () => {
@@ -21,7 +39,7 @@ describe('CommentList Component', () => {
           avatar: ''
         },
         content: 'content-1',
-        downvotesBy: [],
+        downVotesBy: [],
         upVotesBy: []
       },
       {
@@ -30,7 +48,7 @@ describe('CommentList Component', () => {
           avatar: ''
         },
         content: 'content-2',
-        downvotesBy: [],
+        downVotesBy: [],
         upVotesBy: []
       },
       {
@@ -39,7 +57,7 @@ describe('CommentList Component', () => {
           avatar: ''
         },
         content: 'content-3',
-        downvotesBy: [],
+        downVotesBy: [],
         upVotesBy: []
       }
     ];
@@ -48,7 +66,16 @@ describe('CommentList Component', () => {
   });
 
   it('Should render component correctly', async () => {
-    render(<CommentList comments={dummyComments}/>);
+    renderWithProvider(<CommentList comments={dummyComments} onDownVoteComment={() => {}} onNeutralVoteComment={() => {}} onUpVoteComment={() => {}}/>, { initialState: {
+      profile: {
+        user: {
+          id: 'user-1',
+          name:'test'
+        }
+      }
+    } });
+
+    screen.debug();
 
     for (const comment of dummyComments) {
       expect(screen.getByText(comment.content)).toBeVisible();
@@ -57,7 +84,14 @@ describe('CommentList Component', () => {
   });
 
   it('Should show n list item', async () => {
-    render(<CommentList comments={dummyComments}/>);
+    renderWithProvider(<CommentList comments={dummyComments} onDownVoteComment={() => {}} onNeutralVoteComment={() => {}} onUpVoteComment={() => {}}/>, { initialState: {
+      profile: {
+        user: {
+          id: 'user-1',
+          name:'test'
+        }
+      }
+    } });
 
     const allCommentItem = screen.getAllByTestId('comment-item');
 
@@ -65,7 +99,14 @@ describe('CommentList Component', () => {
   });
 
   it('Should show message when there is no comments', async () => {
-    render(<CommentList comments={[]}/>);
+    renderWithProvider(<CommentList comments={[]} onDownVoteComment={() => {}} onNeutralVoteComment={() => {}} onUpVoteComment={() => {}}/>, { initialState: {
+      profile: {
+        user: {
+          id: 'user-1',
+          name:'test'
+        }
+      }
+    } });
 
     const allCommentItem = screen.queryAllByTestId('comment-item');
 

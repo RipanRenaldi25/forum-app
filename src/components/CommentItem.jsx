@@ -1,12 +1,10 @@
 import { FaThumbsDown, FaThumbsUp } from 'react-icons/fa';
 import { getTotalVote, parseDate, removeTags } from '../utils/utils';
-import { useSelector } from 'react-redux';
 
-function CommentItem({ content, createdAt, upVotesBy, downVotesBy, owner, onUpVoteComment, onDownVoteComment, onNeutralVoteComment, id, }) {
-  const profile = useSelector((states) => states.profile);
-  const { user } = profile || {};
-  const isAlreadyUpVoted = upVotesBy.includes(user?.id);
-  const isAlreadyDownVoted = downVotesBy.includes(user?.id);
+function CommentItem({ comment, currentUserId,  onUpVoteComment, onDownVoteComment, onNeutralVoteComment }) {
+  const { content, createdAt, downVotesBy, upVotesBy, owner, id } = comment;
+  const isAlreadyUpVoted = upVotesBy.includes(currentUserId);
+  const isAlreadyDownVoted = downVotesBy.includes(currentUserId);
 
   return (
     <div data-testid="comment-item" className='mb-2 rounded-2xl border border-white/10 bg-white/[0.04] p-4'>

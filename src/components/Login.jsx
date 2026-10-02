@@ -9,6 +9,7 @@ function Login() {
   const dispatch = useDispatch();
   function onSubmitHandler(e) {
     e.preventDefault();
+    console.log('Submit called');
     dispatch(asyncLoginUser(inputValue));
   }
 
