@@ -1,0 +1,12 @@
+{
+    "status": "success",
+    "message": "Comment vote neutralized",
+    "data": {
+        "vote": {
+            "id": "vote-1",
+            "userId": "users-1",
+            "commentId": "comment-1",
+            "voteType": 0
+        }
+    }
+}
