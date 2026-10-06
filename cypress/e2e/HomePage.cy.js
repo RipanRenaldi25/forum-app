@@ -36,7 +36,7 @@ describe('HomePage', () => {
 
   it('Should show thread list', () => {
     cy.intercept('GET', '**/threads', {
-      fixture: 'threadsResponse.json'
+      fixture: 'ThreadsResponse.json'
     }).as('getThreads');
     cy.visit('http://localhost:5173/');
     cy.wait('@getThreads');
