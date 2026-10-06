@@ -2,7 +2,7 @@
   "status" :"success",
   "data": {
     "user": {
-      "id": 1,
+      "id": "user-1",
       "name": "John Doe",
       "email": "johndoe@gmail.com",
       "avatar": "https://randomuser.me/api/portraits/men/1.jpg"
