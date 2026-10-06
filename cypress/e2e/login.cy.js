@@ -10,10 +10,6 @@
 
 describe('Login E2e', () => {
   beforeEach(() => {
-    Cypress.on('uncaught:exception', (err) => {
-      console.log('App Runtime Error:', err.message);
-      return false;
-    });
     cy.visit('http://localhost:5173/login', {
       onBeforeLoad: (win) => {
         cy.stub(win, 'alert').as('alert');
