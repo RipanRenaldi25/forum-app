@@ -43,7 +43,7 @@ function ThreadItem({
   };
 
   return (
-    <section className='group w-full rounded-2xl border border-white/10 bg-white/[0.06] p-4 text-sm shadow-lg shadow-black/20 transition-all hover:-translate-y-0.5 hover:border-cyan-300/30 hover:bg-white/[0.1]'>
+    <section className='group w-full rounded-2xl border border-white/10 bg-white/[0.06] p-4 text-sm shadow-lg shadow-black/20 transition-all hover:-translate-y-0.5 hover:border-cyan-300/30 hover:bg-white/[0.1]' data-testid="thread-item">
       <div className='mb-3 flex items-center justify-between gap-3'>
         <div className='inline-flex rounded-full border border-cyan-300/30 bg-cyan-400/10 px-2.5 py-1 text-[11px] font-medium text-cyan-200'>
           #{category}
