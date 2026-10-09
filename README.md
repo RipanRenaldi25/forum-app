@@ -1,16 +1,18 @@
-# React + Vite
+# Description
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Forum discussion, an application that can make user interact with each other such as create a discussion, create a comment, upvote comment, and downvote comment. This is part of the project work for the Dicoding course. It used [Dicoding API](https://forum-api.dicoding.dev/v1/#/?id=see-all-threads) as part of its development.
 
-Currently, two official plugins are available:
+## Spesification
+ - User can authenticate itself (register and login)
+ - User can create a new discussion
+ - User can create a comment within a discussion
+ - User can Upvote, Downvote, and Neutral Vote the discussion and the comment
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## React Compiler
+## What im proud about
+ - I Create unit test for each React Component using react-testing-library and vitest
+ - I use redux to manage application state.
+ - I Create unit test for every action including thunk and reducer
+ - I use cypress and create End To End test for each page
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+This is not perfect project, but it gives me understanding on how React work, how state management is implemented, and how CI / CD using github action is working from end to end.
