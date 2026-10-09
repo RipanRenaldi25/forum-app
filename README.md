@@ -15,4 +15,12 @@ Forum discussion, an application that can make user interact with each other suc
  - I Create unit test for every action including thunk and reducer
  - I use cypress and create End To End test for each page
 
-This is not perfect project, but it gives me understanding on how React work, how state management is implemented, and how CI / CD using github action is working from end to end.
+## Challenges and How I Solved Them
+ - **Automatic test wont run automatically if there is an alert**
+   - I use stubbing technique for window.alert, so i just need to verify if the alert is already called with some message
+ - **redux middleware (thunk)**: Its hard to understand how redux middleware work with function that return a function that return a function
+   - I break down the function and log for each function inside the middleware. I understand that for 2 first function on middleware is will initialize first, and for the last function will be return a dispatch with an action in it. And if the argument is a function, then it will call the function and give the argument of an action and getState in redux store to function parameter. So now the thunk action (async function that return a function) will have an access to every state that stored in redux.
+   - **Unit Test with RTL**: I dont understand how to create a test using RTL library when the component is use redux store
+     - I use wrapper component, that wrap the component to be test with <Provider> in react-redux, and set the initial state that mock the state that will be used in the component
+
+This is not perfect project, but it gives me understanding on how React work, how create a reusable component using props, how create unit test, integration test, end to end test for front end web application, how state management is implemented, and how CI / CD using github action is working from end to end.
