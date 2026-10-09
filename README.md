@@ -23,4 +23,4 @@ Forum discussion, an application that can make user interact with each other suc
    - **Unit Test with RTL**: I dont understand how to create a test using RTL library when the component is use redux store
      - I use wrapper component, that wrap the component to be test with <Provider> in react-redux, and set the initial state that mock the state that will be used in the component
 
-This is not perfect project, but it gives me understanding on how React work, how create a reusable component using props, how create unit test, integration test, end to end test for front end web application, how state management is implemented, and how CI / CD using github action is working from end to end.
+This is not perfect project, but it gives me understanding on how React work, how create a reusable component using props, how create unit test, integration test, end to end test for front end web application, how state management is implemented, and how CI / CD using github action is working from end to end.a
